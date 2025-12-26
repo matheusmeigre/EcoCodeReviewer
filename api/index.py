@@ -17,13 +17,14 @@ from flask_cors import CORS
 import markdown2
 
 # Importar configuração centralizada
-from api.config import config, client
+from api import config
 
 # Usar valores do config
 GROQ_MODEL = config.GROQ_MODEL
 GROQ_TEMPERATURE = config.GROQ_TEMPERATURE
 GROQ_MAX_TOKENS = config.GROQ_MAX_TOKENS
 GROQ_API_KEY = config.GROQ_API_KEY
+client = config.client
 
 # Inicializar Flask
 app = Flask(__name__, 
