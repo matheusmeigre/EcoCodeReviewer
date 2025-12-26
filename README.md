@@ -67,7 +67,7 @@ Alinhar código limpo com metas de descarbonização e eficiência energética, 
 
 ```powershell
 # Navegue até o diretório do projeto
-cd "c:\Users\Matheus Meigre\Documents\Ferramentas e Estudos\Energisa Inovacoes\EcoCoder Review"
+cd "\EcoCoder Review"
 ```
 
 ### 2. Crie um ambiente virtual (recomendado)
