@@ -14,26 +14,16 @@ import os
 import json
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-from groq import Groq
 import markdown2
 
-# ========== DEBUG: Imprimir TODAS as variáveis de ambiente ==========
-print("\n" + "=" * 80)
-print("🔍 DEBUG - VERIFICAÇÃO DE VARIÁVEIS DE AMBIENTE")
-print("=" * 80)
-print(f"Total de variáveis de ambiente: {len(os.environ)}")
-print("\nVariáveis que contêm 'GROQ':")
-groq_vars = {k: v for k, v in os.environ.items() if 'GROQ' in k.upper()}
-if groq_vars:
-    for key, value in groq_vars.items():
-        preview = f"{value[:10]}...{value[-4:]}" if len(value) > 14 else "***"
-        print(f"  ✓ {key} = {preview} (length: {len(value)})")
-else:
-    print("  ✗ NENHUMA variável GROQ encontrada!")
-    print(f"\nPrimeiras 20 variáveis disponíveis:")
-    for i, key in enumerate(list(os.environ.keys())[:20]):
-        print(f"  - {key}")
-print("=" * 80 + "\n")
+# Importar configuração forçada
+from .config import config, client
+
+# Usar valores do config
+GROQ_MODEL = config.GROQ_MODEL
+GROQ_TEMPERATURE = config.GROQ_TEMPERATURE
+GROQ_MAX_TOKENS = config.GROQ_MAX_TOKENS
+GROQ_API_KEY = config.GROQ_API_KEY
 
 # Inicializar Flask
 app = Flask(__name__, 
