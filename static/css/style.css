@@ -1,0 +1,580 @@
+/* 
+ * Eco-Code Reviewer v2.0 - Clean Corporate Design
+ * Foco: Produtividade e Legibilidade (Split View)
+ * Paleta Minimalista: Off-white, Dark Gray, Orange (ação), Green (sucesso)
+ */
+
+:root {
+    --energisa-orange: #FF6B00;
+    --energisa-green: #28A745;
+    --dark-bg: #1E1E1E;
+    --dark-text: #2C3E50;
+    --light-bg: #F8F9FA;
+    --border-color: #E0E0E0;
+    --code-bg: #282C34;
+    --text-muted: #6C757D;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--light-bg);
+    color: var(--dark-text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ========== HEADER MINIMALISTA ========== */
+.top-header {
+    background: white;
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 0;
+    flex-shrink: 0;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-icon {
+    color: var(--energisa-green);
+    font-size: 1.5rem;
+}
+
+.brand-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--dark-text);
+}
+
+.version-badge {
+    background: var(--energisa-orange);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.company-badge {
+    background: var(--light-bg);
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: var(--dark-text);
+    font-weight: 500;
+}
+
+.company-badge i {
+    color: var(--energisa-orange);
+}
+
+/* ========== CONTROLS BAR ========== */
+.controls-bar {
+    background: white;
+    border-bottom: 1px solid var(--border-color);
+    padding: 15px 0;
+    flex-shrink: 0;
+}
+
+.controls-bar .form-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--dark-text);
+    margin-right: 8px;
+}
+
+.controls-bar .form-select {
+    display: inline-block;
+    width: auto;
+    min-width: 180px;
+    font-size: 0.9rem;
+    border: 1px solid var(--border-color);
+}
+
+.btn-analyze {
+    background: var(--energisa-orange);
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-analyze:hover {
+    background: #e55f00;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+}
+
+.btn-analyze:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.btn-clear {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    padding: 10px 20px;
+    border-radius: 6px;
+    margin-left: 10px;
+    transition: all 0.2s;
+}
+
+.btn-clear:hover {
+    background: var(--light-bg);
+    border-color: var(--text-muted);
+}
+
+.score-mini {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--dark-text);
+}
+
+#scoreMiniValue {
+    color: var(--energisa-green);
+    font-size: 1.1rem;
+}
+
+/* ========== SPLIT VIEW CONTAINER ========== */
+.split-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.split-view {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* ========== PANELS ========== */
+.panel {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    overflow: hidden;
+}
+
+.panel-left {
+    border-right: 2px solid var(--border-color);
+}
+
+.panel-header {
+    background: var(--light-bg);
+    padding: 12px 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--dark-text);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.panel-header i {
+    color: var(--text-muted);
+    margin-right: 8px;
+}
+
+.panel-body {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ========== CODE EDITOR ========== */
+.code-editor {
+    width: 100%;
+    height: 100%;
+    border: none;
+    padding: 20px;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    background: var(--code-bg);
+    color: #ABB2BF;
+    resize: none;
+    outline: none;
+}
+
+.code-editor::placeholder {
+    color: #5C6370;
+}
+
+/* ========== RIGHT PANEL STATES ========== */
+.empty-state,
+.loading-state,
+.results-view {
+    padding: 40px 20px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: var(--energisa-green);
+    opacity: 0.3;
+    margin-bottom: 20px;
+}
+
+.empty-state h4 {
+    color: var(--dark-text);
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    max-width: 400px;
+    margin-bottom: 30px;
+}
+
+.supported-langs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.lang-tag {
+    background: var(--light-bg);
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    color: var(--dark-text);
+    border: 1px solid var(--border-color);
+}
+
+/* Loading State */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+/* ========== RESULTS VIEW ========== */
+.results-view {
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Metrics Section */
+.metrics-section {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.metric-card {
+    background: var(--light-bg);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.metric-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--energisa-green);
+    line-height: 1;
+}
+
+.metric-value-sm {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--energisa-orange);
+}
+
+.metric-sublabel {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+}
+
+.score-card .metric-value {
+    font-size: 3rem;
+}
+
+/* Score coloring */
+.score-good { color: var(--energisa-green) !important; }
+.score-medium { color: #FFC107 !important; }
+.score-poor { color: #DC3545 !important; }
+
+/* Complexity Display */
+.complexity-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fira Code', monospace;
+    font-size: 1.1rem;
+    padding: 10px 0;
+}
+
+.complexity-current {
+    color: #DC3545;
+    font-weight: 600;
+}
+
+.complexity-optimized {
+    color: var(--energisa-green);
+    font-weight: 600;
+}
+
+/* CPU Badge */
+.cpu-badge {
+    padding: 5px 15px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* ========== SUMMARY SECTION ========== */
+.summary-section {
+    background: #FFF9E6;
+    border: 1px solid #FFE082;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.summary-header {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--dark-text);
+    margin-bottom: 15px;
+}
+
+.summary-header i {
+    color: #FFC107;
+    margin-right: 8px;
+}
+
+.summary-content {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: #5D4E37;
+    white-space: pre-wrap;
+}
+
+/* ========== ISSUES SECTION ========== */
+.issues-section {
+    margin-bottom: 25px;
+}
+
+.issues-header {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--dark-text);
+    margin-bottom: 15px;
+}
+
+.issues-header i {
+    color: #DC3545;
+    margin-right: 8px;
+}
+
+.issue-item {
+    background: var(--light-bg);
+    border-left: 3px solid;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.issue-item.severity-high { border-left-color: #DC3545; }
+.issue-item.severity-medium { border-left-color: #FFC107; }
+.issue-item.severity-low { border-left-color: #17A2B8; }
+
+.issue-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.issue-badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.issue-badge.high { background: #DC3545; color: white; }
+.issue-badge.medium { background: #FFC107; color: #333; }
+.issue-badge.low { background: #17A2B8; color: white; }
+
+.issue-message {
+    font-size: 0.85rem;
+    color: var(--dark-text);
+    margin-bottom: 5px;
+}
+
+.issue-impact {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* ========== CODE SECTION ========== */
+.code-section {
+    background: var(--code-bg);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.code-section-header {
+    background: #21252B;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #ABB2BF;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.btn-copy {
+    background: transparent;
+    border: 1px solid #4B5263;
+    color: #ABB2BF;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-copy:hover {
+    background: #4B5263;
+    color: white;
+}
+
+.code-output {
+    margin: 0;
+    padding: 20px;
+    overflow-x: auto;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.code-output code {
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #ABB2BF;
+}
+
+/* ========== FOOTER ========== */
+.mini-footer {
+    background: white;
+    border-top: 1px solid var(--border-color);
+    padding: 10px 0;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+/* ========== SCROLLBAR ========== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--light-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1024px) {
+    .split-view {
+        grid-template-columns: 1fr;
+        grid-template-rows: 400px 1fr;
+    }
+    
+    .panel-left {
+        border-right: none;
+        border-bottom: 2px solid var(--border-color);
+    }
+    
+    .metrics-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .controls-bar .row > div {
+        margin-bottom: 10px;
+    }
+    
+    .btn-analyze,
+    .btn-clear {
+        width: 100%;
+        margin: 5px 0;
+    }
+    
+    .metrics-section {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ========== UTILITIES ========== */
+.text-energisa { color: var(--energisa-orange) !important; }
+.text-success-custom { color: var(--energisa-green) !important; }
+
+::-moz-selection {
+    background: var(--energisa-orange);
+    color: white;
+}
