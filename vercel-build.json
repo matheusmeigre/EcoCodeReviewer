@@ -1,0 +1,3 @@
+{
+  "buildCommand": "python check_env.py && echo 'Env check passed'"
+}
