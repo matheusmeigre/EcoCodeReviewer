@@ -14,18 +14,21 @@
 
 No Dashboard da Vercel:
 
-1. Acesse: **Settings** → **Environment Variables**
-2. Adicione as seguintes variáveis:
+1. Acesse seu projeto: **eco-code-reviewer**
+2. Vá em: **Settings** → **Environment Variables**
+3. Adicione as seguintes variáveis **UMA POR UMA**:
 
 | **Nome**            | **Valor**                      |
 |---------------------|--------------------------------|
-| `GROQ_API_KEY`      | `gsk_***SuaChaveAqui***`       |
+| `GROQ_API_KEY`      | Cole sua chave da Groq aqui    |
 | `GROQ_MODEL`        | `llama-3.3-70b-versatile`      |
 | `GROQ_TEMPERATURE`  | `0.3`                          |
 | `GROQ_MAX_TOKENS`   | `2000`                         |
 | `GROQ_TIMEOUT`      | `30`                           |
 
-3. Certifique-se de aplicar para **todos os ambientes** (Production, Preview, Development)
+⚠️ **IMPORTANTE**: 
+- Marque todas as caixas: **Production**, **Preview** e **Development**
+- Após adicionar todas as variáveis, vá em **Deployments** → **Redeploy** (último deploy)
 
 ---
 
@@ -59,11 +62,14 @@ vercel --prod
 
 ### 3️⃣ Verificar Status
 
-Após o deploy, teste os endpoints:
+Após o redeploy, teste os endpoints:
 
 - **Interface**: `https://seu-projeto.vercel.app/`
+- **Teste da API**: `https://seu-projeto.vercel.app/api/test`
 - **Health Check**: `https://seu-projeto.vercel.app/health`
 - **Config**: `https://seu-projeto.vercel.app/config`
+
+✅ **Se `/api/test` retornar `{"status":"ok"}`, a API está funcionando!**
 
 ---
 

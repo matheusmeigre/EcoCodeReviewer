@@ -21,7 +21,15 @@ import markdown2
 app = Flask(__name__, 
             template_folder='../templates',
             static_folder='../static')
-CORS(app)
+
+# Configurar CORS explicitamente para Vercel
+CORS(app, resources={
+    r"/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
 
 # Configurações (Vercel usa variáveis de ambiente diretamente)
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
@@ -292,6 +300,16 @@ def config():
         'max_tokens': GROQ_MAX_TOKENS,
         'api_configured': bool(client),
         'supported_languages': list(AICodeAnalyzer.LANGUAGE_DOCS.keys())
+    })
+
+
+@app.route('/api/test', methods=['GET'])
+def test():
+    """Endpoint de teste para verificar se a API está respondendo."""
+    return jsonify({
+        'status': 'ok',
+        'message': 'Backend está funcionando!',
+        'timestamp': str(os.environ.get('VERCEL_ENV', 'local'))
     })
 
 
