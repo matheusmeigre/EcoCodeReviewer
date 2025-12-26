@@ -16,8 +16,8 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import markdown2
 
-# Importar configuração forçada
-from .config import config, client
+# Importar configuração forçada (absolute import para gunicorn)
+from config import config, client
 
 # Usar valores do config
 GROQ_MODEL = config.GROQ_MODEL
