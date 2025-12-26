@@ -38,11 +38,19 @@ GROQ_TEMPERATURE = float(os.environ.get('GROQ_TEMPERATURE', '0.3'))
 GROQ_MAX_TOKENS = int(os.environ.get('GROQ_MAX_TOKENS', '2000'))
 GROQ_TIMEOUT = int(os.environ.get('GROQ_TIMEOUT', '30'))
 
+# Debug - imprimir status da chave (sem revelar o valor completo)
+if GROQ_API_KEY:
+    key_preview = f"{GROQ_API_KEY[:10]}...{GROQ_API_KEY[-4:]}" if len(GROQ_API_KEY) > 14 else "***"
+    print(f"✓ GROQ_API_KEY encontrada: {key_preview}")
+else:
+    print("✗ GROQ_API_KEY não encontrada nas variáveis de ambiente")
+
 # Inicializar cliente Groq (GRATUITO!)
 client = None
 if GROQ_API_KEY and GROQ_API_KEY != 'gsk_your-api-key-here':
     try:
         client = Groq(api_key=GROQ_API_KEY)
+        print("✓ Cliente Groq inicializado com sucesso!")
     except Exception as e:
         print(f"⚠️ Erro ao inicializar Groq: {e}")
 else:
@@ -311,6 +319,22 @@ def test():
         'message': 'Backend está funcionando!',
         'timestamp': str(os.environ.get('VERCEL_ENV', 'local'))
     })
+
+
+@app.route('/debug/env', methods=['GET'])
+def debug_env():
+    """Debug: Verificar variáveis de ambiente (SEM expor valores completos)."""
+    env_vars = {
+        'GROQ_API_KEY': 'SET' if GROQ_API_KEY else 'NOT SET',
+        'GROQ_MODEL': GROQ_MODEL,
+        'GROQ_TEMPERATURE': GROQ_TEMPERATURE,
+        'GROQ_MAX_TOKENS': GROQ_MAX_TOKENS,
+        'GROQ_TIMEOUT': GROQ_TIMEOUT,
+        'client_initialized': bool(client),
+        'vercel_env': os.environ.get('VERCEL_ENV', 'local'),
+        'all_env_keys': [k for k in os.environ.keys() if 'GROQ' in k or 'FLASK' in k]
+    }
+    return jsonify(env_vars)
 
 
 # Para Vercel Serverless (obrigatório)
