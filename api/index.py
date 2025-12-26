@@ -372,7 +372,43 @@ def test():
     })
 
 
-@app.route('/debug/env', methods=['GET'])
+@app.route('/api/env-check-live', methods=['GET'])
+def env_check_live():
+    """Endpoint para verificar variáveis em tempo real."""
+    import os as os_check
+    from datetime import datetime
+    
+    # Ler TODAS as variáveis com GROQ
+    all_groq = {k: v for k, v in os_check.environ.items() if 'GROQ' in k.upper()}
+    
+    # Criar preview seguro
+    groq_preview = {}
+    for key, value in all_groq.items():
+        if len(value) > 14:
+            groq_preview[key] = {
+                'exists': True,
+                'length': len(value),
+                'preview': f"{value[:10]}...{value[-4:]}"
+            }
+        else:
+            groq_preview[key] = {
+                'exists': True,
+                'length': len(value),
+                'preview': '***'
+            }
+    
+    return jsonify({
+        'timestamp': datetime.now().isoformat(),
+        'total_env_vars': len(os_check.environ),
+        'groq_vars_found': len(all_groq),
+        'groq_vars': groq_preview,
+        'client_initialized': bool(client),
+        'global_GROQ_API_KEY_var': {
+            'exists': bool(GROQ_API_KEY),
+            'length': len(GROQ_API_KEY) if GROQ_API_KEY else 0
+        },
+        'sample_env_keys': list(os_check.environ.keys())[:30]
+    }), 200, {'Cache-Control': 'no-cache, no-store, must-revalidate'}
 def debug_env():
     """Debug: Verificar variáveis de ambiente (SEM expor valores completos)."""
     import os as os_module
