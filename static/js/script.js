@@ -61,7 +61,7 @@ async function analyzeCode() {
 }
 
 /**
- * Exibe os resultados da análise v4.0 (OpenAI API)
+ * Exibe os resultados da análise v4.0 (Groq API)
  */
 function displayResults(result) {
   // Esconder empty state e mostrar results
@@ -357,7 +357,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
       if (data.api_status !== "configured") {
         showToast(
-          "⚠️ API OpenAI não configurada. Configure o arquivo .env para usar análise por IA.",
+          "⚠️ API Groq não configurada. Configure GROQ_API_KEY nas variáveis de ambiente da Vercel.",
           "warning"
         );
       }
