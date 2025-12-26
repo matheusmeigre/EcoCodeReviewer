@@ -301,6 +301,16 @@ def health():
     """Verifica o status da aplicação e da API."""
     api_status = 'configured' if client else 'not_configured'
     
+    # Debug detalhado
+    debug_info = {
+        'groq_key_exists': bool(GROQ_API_KEY),
+        'groq_key_length': len(GROQ_API_KEY) if GROQ_API_KEY else 0,
+        'groq_key_preview': f"{GROQ_API_KEY[:10]}...{GROQ_API_KEY[-4:]}" if GROQ_API_KEY and len(GROQ_API_KEY) > 14 else "NOT SET",
+        'client_initialized': bool(client),
+        'client_type': str(type(client)),
+        'all_env_keys': [k for k in os.environ.keys() if 'GROQ' in k]
+    }
+    
     return jsonify({
         'status': 'healthy',
         'version': '4.0',
@@ -308,11 +318,7 @@ def health():
         'engine': 'Groq API (FREE)',
         'model': GROQ_MODEL,
         'api_status': api_status,
-        'debug': {
-            'groq_key_exists': bool(GROQ_API_KEY),
-            'groq_key_length': len(GROQ_API_KEY) if GROQ_API_KEY else 0,
-            'client_initialized': bool(client)
-        }
+        'debug': debug_info
     })
 
 
