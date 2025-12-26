@@ -295,7 +295,12 @@ def health():
         'service': 'Eco-Code Reviewer',
         'engine': 'Groq API (FREE)',
         'model': GROQ_MODEL,
-        'api_status': api_status
+        'api_status': api_status,
+        'debug': {
+            'groq_key_exists': bool(GROQ_API_KEY),
+            'groq_key_length': len(GROQ_API_KEY) if GROQ_API_KEY else 0,
+            'client_initialized': bool(client)
+        }
     })
 
 
