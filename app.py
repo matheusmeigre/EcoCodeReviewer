@@ -126,12 +126,12 @@ class AICodeAnalyzer:
     
     def analyze(self) -> dict:
         """
-        Envia o código para análise via OpenAI API.
+        Envia o código para análise via Groq API.
         Retorna análise estruturada em JSON.
         """
         
         if not client:
-            return self._fallback_response("API OpenAI não configurada. Configure OPENAI_API_KEY no arquivo .env")
+            return self._fallback_response("API Groq não configurada. Configure GROQ_API_KEY no arquivo .env")
         
         try:
             system_prompt = self.SYSTEM_PROMPT_TEMPLATE.format(
@@ -216,7 +216,7 @@ def index():
 @app.route('/analyze', methods=['POST'])
 def analyze_code():
     """
-    Endpoint v4.0: Análise Semântica via OpenAI API
+    Endpoint v4.0: Análise Semântica via Groq API
     
     Request Body:
     {
