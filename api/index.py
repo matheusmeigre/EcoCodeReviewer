@@ -299,6 +299,11 @@ def analyze_code():
 @app.route('/health')
 def health():
     """Verifica o status da aplicação e da API."""
+    import os as os_module
+    
+    # Ler variáveis diretamente aqui (sem cache)
+    key_from_env = os_module.environ.get('GROQ_API_KEY', '')
+    
     api_status = 'configured' if client else 'not_configured'
     
     # Debug detalhado
@@ -308,12 +313,17 @@ def health():
         'groq_key_preview': f"{GROQ_API_KEY[:10]}...{GROQ_API_KEY[-4:]}" if GROQ_API_KEY and len(GROQ_API_KEY) > 14 else "NOT SET",
         'client_initialized': bool(client),
         'client_type': str(type(client)),
-        'all_env_keys': [k for k in os.environ.keys() if 'GROQ' in k]
+        'all_env_keys': [k for k in os.environ.keys() if 'GROQ' in k],
+        'direct_read': {
+            'key_exists': bool(key_from_env),
+            'key_length': len(key_from_env),
+            'key_preview': f"{key_from_env[:10]}...{key_from_env[-4:]}" if key_from_env and len(key_from_env) > 14 else "EMPTY"
+        }
     }
     
     return jsonify({
         'status': 'healthy',
-        'version': '4.0',
+        'version': '4.0.1',
         'service': 'Eco-Code Reviewer',
         'engine': 'Groq API (FREE)',
         'model': GROQ_MODEL,
