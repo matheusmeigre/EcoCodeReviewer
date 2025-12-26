@@ -357,6 +357,11 @@ def test():
 @app.route('/debug/env', methods=['GET'])
 def debug_env():
     """Debug: Verificar variáveis de ambiente (SEM expor valores completos)."""
+    import os as os_module
+    
+    # Ler DIRETO do ambiente
+    key_direct = os_module.environ.get('GROQ_API_KEY', '')
+    
     env_vars = {
         'GROQ_API_KEY': 'SET' if GROQ_API_KEY else 'NOT SET',
         'GROQ_MODEL': GROQ_MODEL,
@@ -365,9 +370,35 @@ def debug_env():
         'GROQ_TIMEOUT': GROQ_TIMEOUT,
         'client_initialized': bool(client),
         'vercel_env': os.environ.get('VERCEL_ENV', 'local'),
-        'all_env_keys': [k for k in os.environ.keys() if 'GROQ' in k or 'FLASK' in k]
+        'all_env_keys': [k for k in os.environ.keys() if 'GROQ' in k or 'FLASK' in k],
+        'direct_read_from_os': {
+            'key_exists': bool(key_direct),
+            'key_length': len(key_direct) if key_direct else 0,
+            'key_preview': f"{key_direct[:10]}...{key_direct[-4:]}" if len(key_direct) > 14 else "EMPTY",
+            'timestamp': '2025-12-26-19:30'
+        }
     }
     return jsonify(env_vars)
+
+
+@app.route('/status-check-v2', methods=['GET'])
+def status_check_v2():
+    """Novo endpoint para forçar bypass de cache."""
+    import os as os_module
+    from datetime import datetime
+    
+    groq_key = os_module.environ.get('GROQ_API_KEY', '')
+    
+    return jsonify({
+        'timestamp': datetime.now().isoformat(),
+        'version': '4.0.2-NOCACHE',
+        'groq_configured': bool(groq_key),
+        'groq_key_length': len(groq_key),
+        'groq_key_first_10': groq_key[:10] if groq_key else 'NONE',
+        'groq_key_last_4': groq_key[-4:] if len(groq_key) > 4 else 'NONE',
+        'all_groq_vars': [k for k in os_module.environ.keys() if 'GROQ' in k],
+        'client_ok': bool(client)
+    })
 
 
 # Para Vercel Serverless (obrigatório)
