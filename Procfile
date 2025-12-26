@@ -1,0 +1,1 @@
+web: cd api && python -m flask --app index run --host=0.0.0.0 --port=$PORT
