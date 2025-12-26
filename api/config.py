@@ -24,10 +24,23 @@ client = None
 if GROQ_API_KEY and len(GROQ_API_KEY) > 10:
     try:
         from groq import Groq
-        client = Groq(api_key=GROQ_API_KEY)
+        # Inicializar apenas com api_key (sem argumentos extras)
+        client = Groq(
+            api_key=GROQ_API_KEY,
+            max_retries=2
+        )
         print("✓ Cliente Groq inicializado com sucesso!")
+    except TypeError as e:
+        # Fallback: tentar sem nenhum argumento extra
+        print(f"⚠️ Tentando inicialização alternativa: {e}")
+        try:
+            client = Groq(api_key=GROQ_API_KEY)
+            print("✓ Cliente Groq inicializado (modo fallback)!")
+        except Exception as e2:
+            print(f"✗ Erro ao criar cliente Groq: {e2}")
+            client = None
     except Exception as e:
-        print(f"Erro ao criar cliente Groq: {e}")
+        print(f"✗ Erro ao criar cliente Groq: {e}")
         client = None
 else:
     print("⚠️ GROQ_API_KEY não configurada!")
