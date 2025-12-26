@@ -16,7 +16,7 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import markdown2
 
-# Importar configuração forçada (absolute import para gunicorn)
+# Importar configuração centralizada
 from api.config import config, client
 
 # Usar valores do config
@@ -30,7 +30,7 @@ app = Flask(__name__,
             template_folder='../templates',
             static_folder='../static')
 
-# Configurar CORS explicitamente para Vercel
+# Configurar CORS
 CORS(app, resources={
     r"/*": {
         "origins": "*",
@@ -38,43 +38,6 @@ CORS(app, resources={
         "allow_headers": ["Content-Type"]
     }
 })
-
-# Configurações (Vercel usa variáveis de ambiente diretamente)
-GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '').strip()
-GROQ_MODEL = os.environ.get('GROQ_MODEL', 'llama-3.3-70b-versatile')
-GROQ_TEMPERATURE = float(os.environ.get('GROQ_TEMPERATURE', '0.3'))
-GROQ_MAX_TOKENS = int(os.environ.get('GROQ_MAX_TOKENS', '2000'))
-GROQ_TIMEOUT = int(os.environ.get('GROQ_TIMEOUT', '30'))
-
-# Debug - imprimir status da chave (sem revelar o valor completo)
-print("=" * 60)
-print("🔍 DEBUG - Inicialização Groq API")
-print("=" * 60)
-
-if GROQ_API_KEY:
-    key_preview = f"{GROQ_API_KEY[:10]}...{GROQ_API_KEY[-4:]}" if len(GROQ_API_KEY) > 14 else "***"
-    print(f"✓ GROQ_API_KEY encontrada: {key_preview}")
-    print(f"✓ Tamanho da chave: {len(GROQ_API_KEY)} caracteres")
-else:
-    print("✗ GROQ_API_KEY não encontrada nas variáveis de ambiente")
-    print(f"✗ Valor recebido: '{GROQ_API_KEY}' (vazio)")
-
-print(f"✓ GROQ_MODEL: {GROQ_MODEL}")
-print(f"✓ GROQ_TEMPERATURE: {GROQ_TEMPERATURE}")
-print("=" * 60)
-
-# Inicializar cliente Groq (GRATUITO!)
-client = None
-if GROQ_API_KEY and len(GROQ_API_KEY) > 10:
-    try:
-        client = Groq(api_key=GROQ_API_KEY)
-        print("✓ Cliente Groq inicializado com sucesso!")
-    except Exception as e:
-        print(f"⚠️ Erro ao inicializar Groq: {e}")
-        import traceback
-        traceback.print_exc()
-else:
-    print("⚠️ GROQ_API_KEY não configurada! Configure as variáveis de ambiente na Vercel")
 
 
 class AICodeAnalyzer:
