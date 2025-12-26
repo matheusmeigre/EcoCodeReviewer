@@ -99,6 +99,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Vercel
+.vercel
+.vercel_build_output/
+
 # Arquivos de teste (podem conter dados sensíveis)
 test_with_real_api.py
 test_credentials.py

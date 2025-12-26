@@ -1,9 +1,10 @@
 /**
  * Eco-Code Reviewer v4.0 - Frontend Logic
- * Integração com OpenAI API para análise semântica real
+ * Integração com Groq API para análise semântica real
  */
 
-const API_URL = "http://localhost:5000";
+// URL relativa funciona tanto local quanto na Vercel
+const API_URL = window.location.origin;
 
 /**
  * Função principal de análise de código
