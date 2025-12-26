@@ -6,7 +6,7 @@ Paradigma: Inteligência Artificial substituindo Regex limitado
 Motor: Groq LLaMA 3.3 70B (100% GRATUITO!)
 Foco: Green IT, Performance e Clean Code
 
-Autor: Grupo Energisa - Inovação & Sustentabilidade Digital
+Autor: Open Source Community
 Data: Dezembro 2025
 """
 

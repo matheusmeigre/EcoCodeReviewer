@@ -7,17 +7,165 @@
 const API_URL = window.location.origin;
 
 /**
+ * Auto-detecção de linguagem baseada em padrões de código
+ */
+function detectLanguage(code) {
+  // Padrões de detecção
+  const patterns = {
+    python: [
+      /^\s*def\s+\w+\s*\(/m,
+      /^\s*class\s+\w+.*:/m,
+      /^\s*import\s+\w+/m,
+      /^\s*from\s+\w+\s+import/m,
+      /^\s*@\w+/m,
+      /\bprint\s*\(/,
+      /\belif\b/,
+    ],
+    javascript: [
+      /^\s*function\s+\w+\s*\(/m,
+      /^\s*const\s+\w+\s*=/m,
+      /^\s*let\s+\w+\s*=/m,
+      /^\s*var\s+\w+\s*=/m,
+      /console\.log\(/,
+      /=>\s*{/,
+      /\brequire\s*\(/,
+    ],
+    typescript: [
+      /:\s*(string|number|boolean|any)\s*[;=]/,
+      /^\s*interface\s+\w+/m,
+      /^\s*type\s+\w+\s*=/m,
+      /<\w+>/,
+      /as\s+(string|number|boolean)/,
+    ],
+    java: [
+      /^\s*public\s+class\s+\w+/m,
+      /^\s*private\s+(static\s+)?\w+\s+\w+/m,
+      /^\s*protected\s+/m,
+      /System\.out\.println/,
+      /^\s*import\s+java\./m,
+      /\bnew\s+\w+\s*\(/,
+    ],
+    csharp: [
+      /^\s*public\s+class\s+\w+/m,
+      /^\s*private\s+\w+\s+\w+/m,
+      /^\s*using\s+System/m,
+      /Console\.WriteLine/,
+      /\bstring\[\]\s+args\b/,
+      /\bnamespace\s+\w+/m,
+    ],
+    sql: [
+      /^\s*SELECT\s+/im,
+      /^\s*INSERT\s+INTO/im,
+      /^\s*UPDATE\s+\w+\s+SET/im,
+      /^\s*DELETE\s+FROM/im,
+      /^\s*CREATE\s+TABLE/im,
+      /\bJOIN\b/i,
+      /\bWHERE\b/i,
+    ],
+    react: [
+      /^\s*import\s+React/m,
+      /from\s+['"]react['"]/,
+      /useState\s*\(/,
+      /useEffect\s*\(/,
+      /<\/\w+>/,
+      /className=/,
+      /\bJSX\b/,
+    ],
+    delphi: [
+      /^\s*procedure\s+\w+/im,
+      /^\s*function\s+\w+.*:\s*\w+/im,
+      /^\s*begin\b/im,
+      /^\s*end\s*;/im,
+      /\bvar\s+\w+\s*:\s*\w+/im,
+    ],
+    nosql: [
+      /db\.\w+\.find\(/,
+      /db\.\w+\.insert/,
+      /db\.\w+\.update/,
+      /\$match\s*:/,
+      /\$group\s*:/,
+      /\$project\s*:/,
+    ],
+  };
+
+  // Contagem de matches para cada linguagem
+  const scores = {};
+
+  for (const [lang, rules] of Object.entries(patterns)) {
+    scores[lang] = 0;
+    for (const pattern of rules) {
+      if (pattern.test(code)) {
+        scores[lang]++;
+      }
+    }
+  }
+
+  // Encontrar linguagem com mais matches
+  let maxScore = 0;
+  let detectedLang = null;
+
+  for (const [lang, score] of Object.entries(scores)) {
+    if (score > maxScore) {
+      maxScore = score;
+      detectedLang = lang;
+    }
+  }
+
+  // Se nenhum match significativo, retorna null
+  return maxScore >= 2 ? detectedLang : null;
+}
+
+/**
+ * Handler para input de código - detecta linguagem automaticamente
+ */
+function onCodeInput() {
+  const codeInput = document.getElementById("codeInput");
+  const languageSelect = document.getElementById("languageSelect");
+  const code = codeInput.value.trim();
+
+  // Só auto-detecta se opção "auto" estiver selecionada
+  if (languageSelect.value === "auto" && code.length > 50) {
+    const detected = detectLanguage(code);
+    if (detected) {
+      // Mostra feedback visual da detecção
+      const label = document.querySelector('label[for="languageSelect"]');
+      const originalText = label.innerHTML;
+      label.innerHTML = `<i class="fas fa-check-circle text-success"></i> Linguagem: ${detected.toUpperCase()} detectado`;
+
+      setTimeout(() => {
+        label.innerHTML = originalText;
+      }, 2000);
+    }
+  }
+}
+
+/**
  * Função principal de análise de código
  */
 async function analyzeCode() {
   const codeInput = document.getElementById("codeInput");
   const languageSelect = document.getElementById("languageSelect");
   const code = codeInput.value.trim();
-  const language = languageSelect.value;
+  let language = languageSelect.value;
 
   if (!code) {
     showToast("Por favor, insira um código para análise.", "warning");
     return;
+  }
+
+  // Auto-detectar se necessário
+  if (language === "auto") {
+    const detected = detectLanguage(code);
+    if (detected) {
+      language = detected;
+      showToast(`🔍 Linguagem detectada: ${language.toUpperCase()}`, "info");
+    } else {
+      showToast(
+        "⚠️ Não foi possível detectar a linguagem automaticamente. Por favor, selecione manualmente.",
+        "warning"
+      );
+      return;
+    }
   }
 
   // Transição de estados
@@ -412,3 +560,25 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Event Listeners
+document.addEventListener("DOMContentLoaded", function () {
+  const codeInput = document.getElementById("codeInput");
+  if (codeInput) {
+    // Debounce para não processar a cada tecla
+    let timeout;
+    codeInput.addEventListener("input", function () {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        onCodeInput();
+      }, 500);
+    });
+
+    // Detectar também no paste
+    codeInput.addEventListener("paste", function () {
+      setTimeout(() => {
+        onCodeInput();
+      }, 100);
+    });
+  }
+});
