@@ -1,4 +1,4 @@
-# 🌱 Eco-Code Reviewer v2.0
+# 🌱 Eco-Code Reviewer v4.0
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-3.0.0-green)](https://flask.palletsprojects.com/)
