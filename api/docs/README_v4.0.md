@@ -368,7 +368,7 @@ Frontend exibe:
 ## 📞 SUPORTE
 
 **Projeto:** Eco-Code Reviewer v4.0  
-**Cliente:** Grupo Energisa - Inovação & Sustentabilidade Digital  
+**Cliente:** Matheus Meigre - Inovação & Sustentabilidade Digital  
 **Paradigma:** Semantic Analysis via AI  
 **Objetivo:** Reduzir consumo energético via otimização inteligente  
 
