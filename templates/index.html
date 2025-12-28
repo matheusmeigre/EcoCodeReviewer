@@ -71,18 +71,28 @@
                         <button class="lang-pill" data-lang="csharp" title="C#">
                             C#
                         </button>
-                        <button class="lang-pill lang-pill-more" id="moreLangsBtn" title="Mais linguagens">
-                            <i class="fas fa-ellipsis-h"></i>
+                        
+                        <!-- Linguagens extras (inicialmente ocultas) -->
+                        <button class="lang-pill lang-extra" data-lang="typescript" title="TypeScript" style="display: none;">
+                            TypeScript
                         </button>
-                    </div>
-                    
-                    <!-- Dropdown para linguagens adicionais -->
-                    <div class="more-langs-dropdown" id="moreLangsDropdown">
-                        <button class="lang-option" data-lang="typescript">TypeScript</button>
-                        <button class="lang-option" data-lang="react">React/ReactJS</button>
-                        <button class="lang-option" data-lang="sql">SQL</button>
-                        <button class="lang-option" data-lang="nosql">NoSQL/MongoDB</button>
-                        <button class="lang-option" data-lang="delphi">Delphi</button>
+                        <button class="lang-pill lang-extra" data-lang="react" title="React/ReactJS" style="display: none;">
+                            React/ReactJS
+                        </button>
+                        <button class="lang-pill lang-extra" data-lang="sql" title="SQL" style="display: none;">
+                            SQL
+                        </button>
+                        <button class="lang-pill lang-extra" data-lang="nosql" title="NoSQL/MongoDB" style="display: none;">
+                            NoSQL/MongoDB
+                        </button>
+                        <button class="lang-pill lang-extra" data-lang="delphi" title="Delphi" style="display: none;">
+                            Delphi
+                        </button>
+                        
+                        <!-- Botão de toggle -->
+                        <button class="lang-pill lang-pill-toggle" id="toggleMoreLangs" title="Exibir mais linguagens">
+                            <i class="fas fa-chevron-down"></i> <span class="toggle-text">Mais</span>
+                        </button>
                     </div>
                     
                     <!-- Hidden input para compatibilidade com código existente -->

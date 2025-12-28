@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   initializeCodeMirror();
   initializeLanguagePills();
-  initializeMoreLangsDropdown();
+  initializeToggleMoreLangs();
 });
 
 /**
@@ -196,7 +196,7 @@ Pressione Ctrl+Enter para analisar`,
  * Inicializa os botões de seleção de linguagem (Pills)
  */
 function initializeLanguagePills() {
-  const pills = document.querySelectorAll(".lang-pill:not(.lang-pill-more)");
+  const pills = document.querySelectorAll(".lang-pill:not(.lang-pill-toggle)");
 
   pills.forEach((pill) => {
     pill.addEventListener("click", function () {
@@ -238,58 +238,41 @@ function initializeLanguagePills() {
 }
 
 /**
- * Inicializa o dropdown de "Mais linguagens"
+ * Inicializa o toggle de "Exibir mais/menos linguagens" (NOVO COMPORTAMENTO INLINE)
  */
-function initializeMoreLangsDropdown() {
-  const moreBtn = document.getElementById("moreLangsBtn");
-  const dropdown = document.getElementById("moreLangsDropdown");
-  const options = document.querySelectorAll(".lang-option");
+function initializeToggleMoreLangs() {
+  const toggleBtn = document.getElementById("toggleMoreLangs");
+  const extraLangs = document.querySelectorAll(".lang-extra");
+  let isExpanded = false;
 
-  // Toggle dropdown
-  moreBtn.addEventListener("click", function (e) {
+  if (!toggleBtn) {
+    logger.warn("Botão de toggle não encontrado");
+    return;
+  }
+
+  toggleBtn.addEventListener("click", function (e) {
     e.stopPropagation();
-    dropdown.classList.toggle("show");
-  });
+    isExpanded = !isExpanded;
 
-  // Selecionar linguagem do dropdown
-  options.forEach((option) => {
-    option.addEventListener("click", function () {
-      const lang = this.getAttribute("data-lang");
-
-      // Atualiza linguagem
-      selectedLanguage = lang;
-      document.getElementById("languageSelect").value = lang;
-
-      // Remove active de todos os pills
-      document
-        .querySelectorAll(".lang-pill")
-        .forEach((p) => p.classList.remove("active"));
-
-      // Fecha dropdown
-      dropdown.classList.remove("show");
-
-      // Atualiza CodeMirror
-      if (codeEditor) {
-        updateCodeMirrorMode(lang);
-      }
-
-      // Feedback visual
-      showToast(
-        `Linguagem selecionada: ${lang.toUpperCase()}`,
-        "success",
-        2000
-      );
-
-      // Limpa feedback de detecção
-      document.getElementById("detectionFeedback").innerHTML = "";
+    // Exibir/ocultar linguagens extras
+    extraLangs.forEach((lang) => {
+      lang.style.display = isExpanded ? "flex" : "none";
     });
-  });
 
-  // Fechar dropdown ao clicar fora
-  document.addEventListener("click", function (e) {
-    if (!moreBtn.contains(e.target) && !dropdown.contains(e.target)) {
-      dropdown.classList.remove("show");
+    // Atualizar visual do botão
+    toggleBtn.classList.toggle("expanded", isExpanded);
+    const icon = toggleBtn.querySelector("i");
+    const text = toggleBtn.querySelector(".toggle-text");
+
+    if (isExpanded) {
+      text.textContent = "Menos";
+      toggleBtn.setAttribute("title", "Exibir menos linguagens");
+    } else {
+      text.textContent = "Mais";
+      toggleBtn.setAttribute("title", "Exibir mais linguagens");
     }
+
+    logger.debug("Toggle linguagens", { isExpanded });
   });
 }
 

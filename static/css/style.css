@@ -193,33 +193,50 @@ body {
     font-size: 1rem;
 }
 
+/* Botão de toggle (Mais/Menos) - NOVO COMPORTAMENTO */
+.lang-pill-toggle {
+    background: white;
+    border-style: dashed;
+    border-color: var(--border-color);
+    color: var(--text-muted);
+}
+
+.lang-pill-toggle:hover {
+    background: var(--light-bg);
+    border-color: var(--accent-orange);
+    border-style: solid;
+    color: var(--accent-orange);
+}
+
+.lang-pill-toggle i {
+    transition: transform 0.3s ease;
+}
+
+.lang-pill-toggle.expanded i {
+    transform: rotate(180deg);
+}
+
+/* Linguagens extras com animação suave */
+.lang-extra {
+    animation: fadeInScale 0.3s ease forwards;
+}
+
+/* Remover dropdown antigo */
 .lang-pill-more {
     background: white;
     border-style: dashed;
-    position: relative; /* CORRIGE BUG: Âncora para o dropdown */
 }
 
-/* More Languages Dropdown - POSICIONAMENTO CORRIGIDO */
+/* Dropdown antigo - REMOVIDO (não é mais usado) */
 .more-langs-dropdown {
-    display: none;
-    position: absolute;
-    top: calc(100% + 5px); /* Logo abaixo do botão */
-    left: 0; /* Alinhado à esquerda do botão */
-    background: white;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 8px;
-    z-index: 1000;
-    min-width: 180px;
-}
-
-.more-langs-dropdown.show {
-    display: block;
+    display: none !important;
 }
 
 .lang-option {
-    display: block;
+    display: none !important;
+}
+
+/* Detection Feedback */
     width: 100%;
     text-align: left;
     padding: 10px 15px;
