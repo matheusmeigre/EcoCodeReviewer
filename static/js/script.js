@@ -20,41 +20,49 @@ let codeEditor = null;
  */
 const logger = {
   info: (message, data = {}) => {
-    console.log(JSON.stringify({
-      level: 'INFO',
-      timestamp: new Date().toISOString(),
-      message,
-      ...data
-    }));
-  },
-  warn: (message, data = {}) => {
-    console.warn(JSON.stringify({
-      level: 'WARN',
-      timestamp: new Date().toISOString(),
-      message,
-      ...data
-    }));
-  },
-  error: (message, error = null, data = {}) => {
-    console.error(JSON.stringify({
-      level: 'ERROR',
-      timestamp: new Date().toISOString(),
-      message,
-      error: error ? error.toString() : null,
-      stack: error?.stack,
-      ...data
-    }));
-  },
-  debug: (message, data = {}) => {
-    if (window.location.hostname === 'localhost') {
-      console.log(JSON.stringify({
-        level: 'DEBUG',
+    console.log(
+      JSON.stringify({
+        level: "INFO",
         timestamp: new Date().toISOString(),
         message,
-        ...data
-      }));
+        ...data,
+      })
+    );
+  },
+  warn: (message, data = {}) => {
+    console.warn(
+      JSON.stringify({
+        level: "WARN",
+        timestamp: new Date().toISOString(),
+        message,
+        ...data,
+      })
+    );
+  },
+  error: (message, error = null, data = {}) => {
+    console.error(
+      JSON.stringify({
+        level: "ERROR",
+        timestamp: new Date().toISOString(),
+        message,
+        error: error ? error.toString() : null,
+        stack: error?.stack,
+        ...data,
+      })
+    );
+  },
+  debug: (message, data = {}) => {
+    if (window.location.hostname === "localhost") {
+      console.log(
+        JSON.stringify({
+          level: "DEBUG",
+          timestamp: new Date().toISOString(),
+          message,
+          ...data,
+        })
+      );
     }
-  }
+  },
 };
 
 /**
@@ -668,9 +676,9 @@ function displayResults(result) {
     return;
   }
 
-  logger.debug("Código otimizado preparado para exibição", { 
+  logger.debug("Código otimizado preparado para exibição", {
     length: optimizedCode.length,
-    preview: optimizedCode.substring(0, 100)
+    preview: optimizedCode.substring(0, 100),
   });
 
   const preElement = codeBlock.parentElement;
@@ -810,11 +818,11 @@ async function copyOptimizedCode() {
     await navigator.clipboard.writeText(code);
     showToast("Código copiado para a área de transferência!", "success");
   } catch (err) {
-    console.error("Erro ao copiar:", err);
+    logger.error("Erro ao copiar código", err);
     showToast("Erro ao copiar código. Tente selecionar manualmente.", "danger");
   }
 }
-logger.error("Erro ao copiar código
+
 /**
  * Limpa todos os campos
  */
@@ -933,7 +941,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         version: data.version,
         engine: data.engine,
         model: data.model,
-        api_status: data.api_status
+        api_status: data.api_status,
       });
 
       if (data.api_status !== "configured") {
