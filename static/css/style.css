@@ -204,7 +204,7 @@ body {
     display: none;
     position: absolute;
     top: calc(100% + 5px); /* Logo abaixo do botão */
-    right: 0;
+    left: 0; /* Alinhado à esquerda do botão */
     background: white;
     border: 1px solid var(--border-color);
     border-radius: 8px;
