@@ -1,408 +1,216 @@
 # 🌱 Eco-Code Reviewer v2.0
 
-**Otimização de Código Multi-Linguagem para Data Centers Sustentáveis**
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-3.0.0-green)](https://flask.palletsprojects.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![AI-Powered](https://img.shields.io/badge/AI-Groq%20LLaMA-orange)](https://groq.com/)
 
-Uma ferramenta corporativa avançada desenvolvida para o Grupo Energisa que analisa código em **múltiplas linguagens** e identifica oportunidades de otimização visando redução de consumo energético, eficiência algorítmica e melhor performance em Data Centers.
+**Ferramenta inteligente de análise de código com foco em sustentabilidade e performance.**
 
----
-
-## ✨ Novidades da Versão 2.0
-
-### 🔥 Suporte Multi-Linguagem
-- **Python** - Loops aninhados, list comprehensions, generators
-- **C#** - LINQ ineficiente, StringBuilder, estruturas de dados
-- **Java** - StringBuilder, coleções adequadas, complexidade
-- **Delphi** - TStringBuilder, TDictionary, busca ordenada
-- **JavaScript** - ES6 otimizações, Map/Set, array methods
-- **TypeScript** - Tipagem forte para otimizações
-- **React/ReactJS** - useCallback, useMemo, reconciliação
-- **SQL** - SELECT *, JOINs, índices, subqueries
-- **NoSQL/MongoDB** - Projeções, índices, agregações
-
-### 🎨 Novo Design: Split View para Produtividade Máxima
-- **Layout Lado-a-Lado**: Código original à esquerda, otimizado à direita
-- **Sem Scroll Desnecessário**: Veja as sugestões imediatamente
-- **Design Minimalista**: Foco na legibilidade do código
-- **Clean Corporate**: Paleta reduzida (Branco, Cinza, Laranja para ações, Verde para sucesso)
-
-### 📊 Resumo Didático de Otimizações
-- Explicação clara do que foi mudado
-- Por que isso economiza energia/processamento
-- Benefícios estimados em milissegundos e carga de CPU
+Analise código em **24 linguagens** com recomendações otimizadas para eco-eficiência, detectando problemas de performance, segurança e manutenibilidade.
 
 ---
 
-## 🎯 Objetivo
+## ✨ Características
 
-Alinhar código limpo com metas de descarbonização e eficiência energética, fornecendo:
-- **Score de Sustentabilidade** (0-100)
-- **Análise de Complexidade** (Big O Notation)
-- **Estimativa de Economia Energética**
-- **Sugestões de Refatoração Específicas por Linguagem**
-- **Resumo Didático das Otimizações**
+- 🤖 **Análise Semântica via IA** (Groq LLaMA 3.3-70B)
+- 🔍 **18 Plugins Especializados** para diferentes linguagens
+- 🌍 **24 Linguagens Suportadas**
+- 📊 **Métricas de Eco-Impact** (CPU, memória, energia)
+- ⚡ **Detecção Automática de Linguagem**
+- 🎨 **Interface Web Responsiva** com CodeMirror
+- 🔧 **Arquitetura Modular** baseada em plugins
 
 ---
 
-## 🚀 Tecnologias
+## 🚀 Linguagens Suportadas
 
 ### Backend
-- **Python 3.8+**
-- **Flask 3.0.0** - Framework web
-- **Flask-CORS 4.0.0** - Gerenciamento de CORS
-- **Analisador Multi-Linguagem** - Heurísticas específicas por linguagem
+- Python, JavaScript/TypeScript, Go, Rust, PHP, Ruby
 
 ### Frontend
-- **HTML5** - Estrutura semântica split view
-- **CSS3** - Grid layout, design minimalista
-- **Bootstrap 5** (via CDN) - Componentes base
-- **JavaScript ES6+** - Fetch API, async/await
-- **Font Awesome** - Ícones
-- **Fira Code** - Fonte monospace para código
+- React, Vue, Angular, Svelte
+
+### Mobile
+- Kotlin, Swift
+
+### Infrastructure & DevOps
+- Bash, YAML, Dockerfile, Terraform
 
 ---
 
-## � Instalação e Configuração
+## 📦 Instalação
 
-### 1. Clone ou baixe o projeto
+### Pré-requisitos
+- Python 3.9+
+- Chave API Groq (gratuita em [console.groq.com](https://console.groq.com))
 
-```powershell
-# Navegue até o diretório do projeto
-cd "\EcoCoder Review"
+### Passos
+
+1. **Clone o repositório:**
+```bash
+git clone https://github.com/SEU_USUARIO/ecocoder-review.git
+cd ecocoder-review
 ```
 
-### 2. Crie um ambiente virtual (recomendado)
-
-```powershell
-# Criar ambiente virtual
-python -m venv venv
-
-# Ativar ambiente virtual no Windows
-.\venv\Scripts\Activate.ps1
-```
-
-**Nota:** Se encontrar erro de execução de scripts, execute:
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-```
-
-### 3. Instale as dependências
-
-```powershell
+2. **Instale as dependências:**
+```bash
 pip install -r requirements.txt
 ```
 
-### 4. Execute a aplicação
+3. **Configure a chave API:**
+```bash
+# Windows
+set GROQ_API_KEY=sua_chave_aqui
 
-```powershell
-python app.py
+# Linux/Mac
+export GROQ_API_KEY=sua_chave_aqui
 ```
 
-Você verá a mensagem:
-```
-🌱 Eco-Code Reviewer v2.0 iniciado!
-📊 Acesse: http://localhost:5000
-🔋 Suporte multi-linguagem: Python, C#, Java, Delphi, JS, TS, React, SQL
-🚀 Novo layout Split View para produtividade máxima!
+4. **Execute a aplicação:**
+```bash
+python app_v2.py
 ```
 
-### 5. Acesse no navegador
-
-Abra seu navegador e acesse:
+5. **Acesse no navegador:**
 ```
 http://localhost:5000
 ```
 
 ---
 
-## 📖 Como Usar
+## 🎯 Como Usar
 
-1. **Selecione a Linguagem**: Use o dropdown para indicar a linguagem do código
-2. **Cole o Código**: No painel esquerdo, insira o código que deseja analisar
-3. **Clique em "Analisar Eficiência"**: Aguarde a análise (ou pressione Ctrl+Enter)
-4. **Visualize os Resultados**: No painel direito você verá:
-   - Score de sustentabilidade
-   - Complexidade atual vs otimizada
-   - Economia estimada de processamento
-   - Resumo didático da otimização
-   - Problemas detectados
-   - Código refatorado (pronto para copiar)
-
-### Atalhos
-- **Ctrl + Enter**: Executar análise
-- **Botão Copiar**: Copia o código otimizado para clipboard
+1. **Cole seu código** no editor
+2. **Selecione a linguagem** (ou use detecção automática)
+3. **Clique em "Analisar"**
+4. **Revise os resultados:**
+   - Score de qualidade (0-100)
+   - Issues detectados com severidade
+   - Código otimizado sugerido
+   - Métricas de eco-impacto
+   - Análise semântica via IA
 
 ---
 
-## 💡 Exemplos de Código para Teste
+## 🏗️ Arquitetura
 
-### Python - Loops Aninhados
-```python
-resultado = []
-for i in range(len(dados)):
-    for j in range(len(dados)):
-        if dados[i] == dados[j]:
-            resultado.append(dados[i])
+```
+review_engine/
+├── core/
+│   ├── engine.py          # Motor de análise
+│   └── dto.py             # Data Transfer Objects
+├── plugins/               # Plugins especializados
+│   ├── python/
+│   ├── javascript/
+│   ├── go/
+│   ├── rust/
+│   ├── kotlin/
+│   ├── swift/
+│   ├── frontend/          # Vue, Angular, Svelte
+│   └── infra/             # Bash, YAML, Docker, Terraform
+├── detectors/
+│   └── language_detector.py
+└── ai_layer/
+    └── groq_adapter.py    # Integração com IA
 ```
 
-### C# - LINQ Ineficiente
-```csharp
-var users = GetUsers().ToList();
-var count = users.Where(u => u.Active).Count();
-```
-
-### SQL - SELECT * e Subquery
-```sql
-SELECT * FROM users
-WHERE user_id IN (SELECT user_id FROM orders WHERE status = 'pending')
-```
-
-### React - Re-renders Desnecessários
-```jsx
-function Component() {
-  const [data, setData] = useState([]);
-  return (
-    <div>
-      {data.map((item, index) => (
-        <Item key={index} onClick={() => handleClick(item)} />
-      ))}
-    </div>
-  );
-}
-```
-
-### JavaScript - Array Methods Encadeados
-```javascript
-const result = data
-  .map(x => x * 2)
-  .filter(x => x > 10)
-  .map(x => x + 1);
-```
+### Padrões Utilizados
+- **Strategy Pattern** (seleção de plugins)
+- **Adapter Pattern** (integração com IA)
+- **DTO Pattern** (contratos padronizados)
 
 ---
 
-## 🔍 Padrões Detectados por Linguagem
-
-### Python
-- ✅ Loops aninhados (O(n²))
-- ✅ List comprehension vs append em loop
-- ✅ Concatenação de strings com +=
-- ✅ Cálculos repetidos (len() em loop)
-- ✅ Generators vs listas completas
-
-### C#
-- ✅ ToList() desnecessário antes de Count()
-- ✅ String concatenation vs StringBuilder
-- ✅ Loops aninhados
-- ✅ Estruturas de dados inadequadas
-
-### Java
-- ✅ String concatenation em loop
-- ✅ ArrayList vs LinkedList para inserções
-- ✅ Loops aninhados
-- ✅ HashMap/HashSet para buscas
-
-### Delphi
-- ✅ String concatenation vs TStringBuilder
-- ✅ TStringList sem Sorted
-- ✅ Loops aninhados
-- ✅ TDictionary para lookups
-
-### JavaScript/TypeScript
-- ✅ Loops aninhados
-- ✅ Array methods encadeados (múltiplas iterações)
-- ✅ var vs const/let
-- ✅ Tipagem any (TypeScript)
-
-### React
-- ✅ Funções inline sem useCallback
-- ✅ Cálculos complexos sem useMemo
-- ✅ Index como key em map
-- ✅ Re-renders desnecessários
-
-### SQL
-- ✅ SELECT * (transferência desnecessária)
-- ✅ JOIN sem WHERE (full table scan)
-- ✅ Subquery em IN (use JOIN/EXISTS)
-- ✅ LIKE iniciando com % (impede índices)
-
-### NoSQL (MongoDB)
-- ✅ Query sem projeção
-- ✅ Queries sem índices
-- ✅ $lookup excessivo (desnormalização)
-
----
-
-## 🔮 Integração Futura com LLM/OpenAI
-
-O código está preparado para integração com APIs de IA. No arquivo `app.py`, localize o comentário:
+## 🔌 Criando Plugins Personalizados
 
 ```python
-# NOTA PARA INTEGRAÇÃO FUTURA:
-# Aqui você pode substituir a lógica heurística pela chamada à API OpenAI/LLM
-```
+from review_engine.plugins.base_plugin import BasePlugin
+from review_engine.core.dto import ReviewResult, Issue, SeverityLevel
 
-### Exemplo de Integração OpenAI:
-
-```python
-import openai
-
-openai.api_key = 'sua-chave-api'
-
-response = openai.ChatCompletion.create(
-    model="gpt-4",
-    messages=[
-        {
-            "role": "system", 
-            "content": "Você é um especialista em otimização de código Python com foco em eficiência energética..."
-        },
-        {
-            "role": "user", 
-            "content": f"Analise este código e forneça score, complexidade e sugestões: {code}"
+class MeuPlugin(BasePlugin):
+    def get_supported_languages(self):
+        return ["minha_linguagem"]
+    
+    def get_rules(self):
+        return {
+            "RULE_001": {
+                "name": "Nome da Regra",
+                "severity": "high",
+                "category": "performance"
+            }
         }
-    ]
-)
-
-# Extrair dados do response
+    
+    def analyze(self, code: str, language: str) -> ReviewResult:
+        # Sua lógica de análise
+        issues = []
+        # ... detectar problemas
+        return ReviewResult(language=language, issues=issues)
 ```
 
 ---
 
-## 📁 Estrutura do Projeto
+## 📊 Métricas de Eco-Impact
 
-```
-EcoCoder Review/
-│
-├── app.py                 # Backend Flask com lógica heurística
-├── requirements.txt       # Dependências Python
-├── README.md             # Este arquivo
-│
-├── templates/
-│   └── index.html        # Interface principal
-│
-└── static/
-    ├── css/
-    │   └── style.css     # Estilos customizados (paleta Energisa)
-    └── js/
-        └── script.js     # Lógica frontend (Fetch API)
-```
+O sistema calcula:
+- **Complexidade Ciclomática** reduzida
+- **Uso de Memória** otimizado
+- **Speedup Estimado** (2x, 3x, etc.)
+- **Economia de Energia** (% CPU reduzido)
 
 ---
 
-## 🛠️ Solução de Problemas
+## 🤝 Contribuindo
 
-### Erro: "Não foi possível conectar ao servidor"
-- Verifique se o backend está rodando (`python app.py`)
-- Confirme que a porta 5000 não está em uso
+Contribuições são bem-vindas! Por favor:
 
-### Erro: "ModuleNotFoundError: No module named 'flask'"
-- Ative o ambiente virtual
-- Execute `pip install -r requirements.txt`
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
+4. Push para a branch (`git push origin feature/MinhaFeature`)
+5. Abra um Pull Request
 
-### Erro de Política de Execução (PowerShell)
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+---
+
+## 🐛 Troubleshooting
+
+### Erro: "Groq API não configurada"
+```bash
+# Certifique-se de definir a variável de ambiente
+echo $GROQ_API_KEY  # Linux/Mac
+echo %GROQ_API_KEY%  # Windows
 ```
 
-### Layout não aparece corretamente
-- Limpe o cache do navegador (Ctrl+F5)
-- Verifique se os arquivos CSS/JS estão sendo carregados (F12 > Network)
+### Erro: "ModuleNotFoundError"
+```bash
+pip install -r requirements.txt --upgrade
+```
 
----
-
-## 🎨 Design v2.0: Clean Corporate
-
-### Princípios de UX
-- **Split View**: Código original e otimizado lado a lado (inspirado em diff viewers)
-- **Minimalismo**: Paleta reduzida, foco no conteúdo
-- **Sem Scroll Desnecessário**: Informações críticas sempre visíveis
-- **Produtividade Máxima**: Menos cliques, mais resultados
-
-### Paleta de Cores
-- **Off-White** (`#F8F9FA`) - Background principal
-- **Cinza Escuro** (`#2C3E50`) - Texto e headers
-- **Laranja Energisa** (`#FF6B00`) - Ações primárias
-- **Verde** (`#28A745`) - Validações, scores positivos
-- **Code Background** (`#282C34`) - Fundo do editor
-
----
-
-## 📊 Benefícios da Versão 2.0
-
-### Para Desenvolvedores
-- ✅ **Análise em 9+ linguagens** (vs 1 na v1.0)
-- ✅ **Split view side-by-side** (sem scroll)
-- ✅ **Resumo didático** das otimizações
-- ✅ **Seletor de linguagem** intuitivo
-- ✅ **Design focado em produtividade**
-
-### Para Gestores de TI
-- 📊 **Métricas quantificáveis** (ms economizados)
-- 🔋 **Impacto em redução de CPU** (Baixa/Média/Alta)
-- 💰 **ROI estimado** em performance
-- ♻️ **Alinhamento com ESG** e sustentabilidade
-
----
-
-## 📊 Métricas de Impacto
-
-Para cada análise, a ferramenta v2.0 estima:
-- **Economia de processamento** (em milissegundos por execução)
-- **Redução de carga de CPU** (Baixa/Média/Alta)
-- **Complexidade algorítmica** (Big O: antes e depois)
-- **Resumo explicativo** (o que mudou e por quê)
-
-Essas métricas auxiliam na tomada de decisão para priorizar refatorações com maior impacto energético em operações de larga escala.
-
----
-
-## 🤝 Roadmap Futuro
-
-Sugestões de melhorias para v3.0:
-
-1. ✨ Integração com OpenAI GPT-4 para análises contextuais profundas
-2. 📊 Dashboard com histórico de análises e métricas agregadas
-3. 🔄 Integração com CI/CD para análise automática em Pull Requests
-4. ⚡ Cálculo real de consumo energético (kWh) baseado em perfil de hardware
-5. 🌐 Suporte a mais linguagens (Go, Rust, Kotlin, Swift)
-6. 👥 Multi-tenancy e autenticação para times corporativos
-7. 📱 Progressive Web App (PWA) para uso offline
+### Performance lenta
+- Desabilite a análise via IA (checkbox na interface)
+- Use análise estática apenas (mais rápida)
 
 ---
 
 ## 📄 Licença
 
-Desenvolvido por **Matheus Meigre** - Inovação & Tecnologia  
-© 2025 - Todos os direitos reservados
+Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
 ---
 
-## 👨‍💻 Changelog
+## 🙏 Agradecimentos
 
-### v2.0 (Dezembro 2025)
-- ✨ **Suporte multi-linguagem** (Python, C#, Java, Delphi, JS, TS, React, SQL, NoSQL)
-- 🎨 **Novo layout Split View** para produtividade máxima
-- 📝 **Resumo didático** das otimizações
-- 🎯 **Design minimalista** Clean Corporate
-- 🚀 **Análises específicas** por linguagem
-
-### v1.0 (Dezembro 2025)
-- Lançamento inicial com suporte Python
-- Análise heurística básica
-- Interface vertical tradicional
+- [Groq](https://groq.com/) pela API de IA rápida e eficiente
+- [CodeMirror](https://codemirror.net/) pelo editor de código
+- Comunidade open-source de análise estática de código
 
 ---
 
-## 🌍 Impacto Ambiental
+## 📧 Contato
 
-> "Código eficiente não é apenas mais rápido - é mais sustentável."
-
-Cada otimização de código contribui para:
-- ⚡ **Menor consumo energético** dos Data Centers
-- 🌡️ **Redução de emissões de CO₂**
-- 💰 **Economia em infraestrutura** e refrigeração
-- ♻️ **Sustentabilidade digital** e alinhamento com metas ESG
+**Energisa Inovações**  
+Desenvolvido com 💚 para Green IT e Performance Optimization
 
 ---
 
-**Desenvolvido com 💚 para um futuro mais sustentável**  
-*Eco-Code Reviewer v4.0 - Onde Performance encontra Sustentabilidade*
+⭐ **Se este projeto foi útil, considere dar uma estrela no GitHub!**

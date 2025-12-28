@@ -109,3 +109,20 @@ test_credentials.py
 
 # Documentação gerada
 docs/_build/
+# Arquivos markdown de documentação interna (exceto README.md principal)
+*.md
+!README.md
+api/docs/*.md
+review_engine/*.md
+IMPLEMENTATION_STATUS.md
+MIGRATION_GUIDE.md
+REFACTORING_SUMMARY.md
+VALIDATION_CHECKLIST.md
+IMPLEMENTAÇÃO_PLUGINS_FASE3.md
+
+# Arquivos de teste
+test_code_review.py
+test_new_plugins.py
+test_request.json
+verify_installation.py
+test_cases/
