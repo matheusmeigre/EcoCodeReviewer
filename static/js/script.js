@@ -1,6 +1,6 @@
 /**
  * Eco-Code Reviewer v4.0 - Frontend Logic
- * Integração com Groq API + UI Modernizada + Auto-detecção Inteligente
+ * Integração com Groq API + CodeMirror + Auto-detecção Reativa
  */
 
 // URL relativa funciona tanto local quanto na Vercel
@@ -12,14 +12,177 @@ let selectedLanguage = "auto";
 // Timer para debounce da auto-detecção
 let detectionTimer = null;
 
+// Instância do CodeMirror
+let codeEditor = null;
+
+/**
+ * Sistema de logging estruturado para Railway/Vercel
+ */
+const logger = {
+  info: (message, data = {}) => {
+    console.log(JSON.stringify({
+      level: 'INFO',
+      timestamp: new Date().toISOString(),
+      message,
+      ...data
+    }));
+  },
+  warn: (message, data = {}) => {
+    console.warn(JSON.stringify({
+      level: 'WARN',
+      timestamp: new Date().toISOString(),
+      message,
+      ...data
+    }));
+  },
+  error: (message, error = null, data = {}) => {
+    console.error(JSON.stringify({
+      level: 'ERROR',
+      timestamp: new Date().toISOString(),
+      message,
+      error: error ? error.toString() : null,
+      stack: error?.stack,
+      ...data
+    }));
+  },
+  debug: (message, data = {}) => {
+    if (window.location.hostname === 'localhost') {
+      console.log(JSON.stringify({
+        level: 'DEBUG',
+        timestamp: new Date().toISOString(),
+        message,
+        ...data
+      }));
+    }
+  }
+};
+
 /**
  * Inicialização ao carregar a página
  */
 document.addEventListener("DOMContentLoaded", function () {
+  logger.info("Aplicação iniciada");
+
+  // Verifica se CodeMirror está disponível
+  if (typeof CodeMirror === "undefined") {
+    logger.error("CodeMirror não carregado");
+    showToast(
+      "Erro: Editor de código não carregou. Recarregue a página.",
+      "danger",
+      10000
+    );
+    return;
+  }
+
+  logger.info("CodeMirror carregado", { version: CodeMirror.version });
+
+  initializeCodeMirror();
   initializeLanguagePills();
-  initializeCodeInput();
   initializeMoreLangsDropdown();
 });
+
+/**
+ * Inicializa o CodeMirror Editor
+ */
+function initializeCodeMirror() {
+  const textarea = document.getElementById("codeInput");
+  const container = document.getElementById("codeMirrorContainer");
+
+  if (!container) {
+    logger.error("Container CodeMirror não encontrado");
+    return;
+  }
+
+  try {
+    codeEditor = CodeMirror(container, {
+      value: "", // Inicia vazio para usar o placeholder
+      mode: "text/plain",
+      theme: "material-darker",
+      lineNumbers: true,
+      lineWrapping: true,
+      indentUnit: 4,
+      tabSize: 4,
+      indentWithTabs: false,
+      scrollbarStyle: "simple",
+      matchBrackets: true,
+      autoCloseBrackets: true,
+      placeholder: `Cole seu código aqui para análise...
+
+Exemplos suportados:
+
+Python:
+  def calcular_soma(numeros):
+      resultado = 0
+      for i in range(len(numeros)):
+          resultado += numeros[i]
+      return resultado
+
+SQL:
+  SELECT u.nome, COUNT(p.id) as total
+  FROM usuarios u
+  INNER JOIN pedidos p ON u.id = p.usuario_id
+  WHERE p.data > '2025-01-01'
+  GROUP BY u.nome
+
+JavaScript:
+  function processar(items) {
+    const resultado = [];
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].ativo) {
+        resultado.push(items[i]);
+      }
+    }
+    return resultado;
+  }
+
+Pressione Ctrl+Enter para analisar`,
+      tabSize: 4,
+      indentWithTabs: false,
+      scrollbarStyle: "simple",
+      matchBrackets: true,
+      autoCloseBrackets: true,
+      extraKeys: {
+        "Ctrl-Enter": function () {
+          analyzeCode();
+        },
+        "Cmd-Enter": function () {
+          analyzeCode();
+        },
+      },
+    });
+
+    // Force refresh para garantir que o editor seja renderizado
+    setTimeout(() => {
+      if (codeEditor) {
+        codeEditor.refresh();
+      }
+    }, 100);
+
+    // Auto-detecção reativa enquanto digita
+    codeEditor.on("change", function (cm) {
+      // Só detecta se estiver em modo "auto"
+      if (selectedLanguage === "auto") {
+        const code = cm.getValue().trim();
+        if (code.length > 30) {
+          // Debounce de 400ms para performance
+          clearTimeout(detectionTimer);
+          detectionTimer = setTimeout(() => {
+            runAutoDetectionRealtime(code);
+          }, 400);
+        }
+      }
+    });
+
+    logger.info("CodeMirror inicializado com sucesso");
+  } catch (error) {
+    logger.error("Erro ao inicializar CodeMirror", error);
+    // Fallback: mostrar textarea normal
+    if (textarea) {
+      textarea.style.display = "block";
+      textarea.className = "code-editor";
+    }
+  }
+}
 
 /**
  * Inicializa os botões de seleção de linguagem (Pills)
@@ -42,9 +205,19 @@ function initializeLanguagePills() {
       // Limpa feedback de detecção
       document.getElementById("detectionFeedback").innerHTML = "";
 
+      // Atualiza modo do CodeMirror se não for auto
+      if (selectedLanguage !== "auto" && codeEditor) {
+        updateCodeMirrorMode(selectedLanguage);
+      }
+
       // Feedback visual
       if (selectedLanguage === "auto") {
         showToast("🔍 Modo Auto-detectar ativado", "info", 2000);
+        // Dispara detecção imediata
+        const code = codeEditor.getValue().trim();
+        if (code.length > 30) {
+          runAutoDetectionRealtime(code);
+        }
       } else {
         showToast(
           `Linguagem selecionada: ${selectedLanguage.toUpperCase()}`,
@@ -87,6 +260,11 @@ function initializeMoreLangsDropdown() {
       // Fecha dropdown
       dropdown.classList.remove("show");
 
+      // Atualiza CodeMirror
+      if (codeEditor) {
+        updateCodeMirrorMode(lang);
+      }
+
       // Feedback visual
       showToast(
         `Linguagem selecionada: ${lang.toUpperCase()}`,
@@ -108,27 +286,29 @@ function initializeMoreLangsDropdown() {
 }
 
 /**
- * Inicializa o textarea com auto-detecção inteligente
+ * Atualiza o modo (syntax highlighting) do CodeMirror
  */
-function initializeCodeInput() {
-  const codeInput = document.getElementById("codeInput");
+function updateCodeMirrorMode(language) {
+  const modeMap = {
+    python: "text/x-python",
+    javascript: "text/javascript",
+    typescript: "text/typescript",
+    java: "text/x-java",
+    csharp: "text/x-csharp",
+    sql: "text/x-sql",
+    nosql: "text/javascript", // MongoDB usa JS
+    react: "text/jsx",
+    delphi: "text/x-pascal",
+  };
 
-  codeInput.addEventListener("input", function () {
-    // Só detecta se estiver em modo "auto"
-    if (selectedLanguage === "auto" && codeInput.value.trim().length > 30) {
-      // Debounce de 500ms
-      clearTimeout(detectionTimer);
-      detectionTimer = setTimeout(() => {
-        runAutoDetection(codeInput.value);
-      }, 500);
-    }
-  });
+  const mode = modeMap[language] || "text/plain";
+  codeEditor.setOption("mode", mode);
 }
 
 /**
- * Executa a auto-detecção de linguagem em tempo real
+ * Executa a auto-detecção em tempo real (chamada enquanto digita)
  */
-function runAutoDetection(code) {
+function runAutoDetectionRealtime(code) {
   const detected = detectLanguage(code);
   const feedback = document.getElementById("detectionFeedback");
 
@@ -138,12 +318,22 @@ function runAutoDetection(code) {
       Detectado: <strong>${getLanguageDisplayName(detected)}</strong>
     `;
     feedback.style.color = "var(--accent-green)";
+
+    // Atualiza CodeMirror para a linguagem detectada
+    if (codeEditor) {
+      updateCodeMirrorMode(detected);
+    }
   } else {
     feedback.innerHTML = `
       <i class="fas fa-question-circle"></i>
       Linguagem não identificada
     `;
     feedback.style.color = "var(--text-muted)";
+
+    // Reseta para plain text
+    if (codeEditor) {
+      codeEditor.setOption("mode", "text/plain");
+    }
   }
 }
 
@@ -287,8 +477,8 @@ function detectLanguage(code) {
  * Função principal de análise de código
  */
 async function analyzeCode() {
-  const codeInput = document.getElementById("codeInput");
-  const code = codeInput.value.trim();
+  // Pega o código do CodeMirror ao invés do textarea
+  const code = codeEditor ? codeEditor.getValue().trim() : "";
   let language = selectedLanguage; // Usa a variável global
 
   if (!code) {
@@ -346,7 +536,7 @@ async function analyzeCode() {
     displayResults(result);
     showToast("✅ Análise semântica concluída via IA!", "success");
   } catch (error) {
-    console.error("Erro na análise:", error);
+    logger.error("Erro na análise de código", error);
     showToast(`Erro ao analisar código: ${error.message}`, "danger");
     showEmptyState();
   } finally {
@@ -412,10 +602,34 @@ function displayResults(result) {
 
   // Explanation (Markdown já convertido para HTML pelo backend)
   const explanationContent = document.getElementById("explanationContent");
-  explanationContent.innerHTML =
+  let explanationHtml =
     data.explanationHtml || data.explanation || "Sem explicação disponível.";
 
-  // Aplicar syntax highlighting no código dentro da explicação
+  // CRÍTICO: Remover blocos de código grandes que não deveriam estar na explicação
+  // Criar elemento temporário para manipular DOM
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = explanationHtml;
+
+  // Remover blocos <pre><code> que contenham mais de 5 linhas (código completo)
+  tempDiv.querySelectorAll("pre code").forEach((codeBlock) => {
+    const lines = codeBlock.textContent.split("\n").length;
+    if (lines > 5 || codeBlock.classList.contains("language-none")) {
+      // Remove o bloco <pre> inteiro
+      codeBlock.closest("pre").remove();
+    }
+  });
+
+  // Remover headers que digam "Código Otimizado" ou similares
+  tempDiv.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach((header) => {
+    const text = header.textContent.toLowerCase();
+    if (text.includes("código otimizado") || text.includes("optimized code")) {
+      header.remove();
+    }
+  });
+
+  explanationContent.innerHTML = tempDiv.innerHTML;
+
+  // Aplicar syntax highlighting no código dentro da explicação (apenas exemplos pequenos)
   setTimeout(() => {
     explanationContent.querySelectorAll("pre code").forEach((block) => {
       Prism.highlightElement(block);
@@ -430,16 +644,59 @@ function displayResults(result) {
     document.getElementById("issuesSection").style.display = "none";
   }
 
-  // Código otimizado
-  const optimizedCode = data.optimizedCode || code;
-  document.getElementById("optimizedCode").textContent = optimizedCode;
+  // Código otimizado - preservar formatação com syntax highlighting
+  let optimizedCode = data.optimizedCode;
 
-  // Aplicar syntax highlighting no código otimizado
+  // CRÍTICO: Verificar se o backend retornou apenas placeholder
+  const placeholders = [
+    "// Código otimizado aqui (se aplicável)",
+    "// Código otimizado disponível abaixo",
+    "// Código otimizado abaixo",
+    "// Código otimizado",
+  ];
+
+  if (!optimizedCode || placeholders.some((p) => optimizedCode.trim() === p)) {
+    logger.warn("Backend retornou placeholder, usando código original");
+    // Pegar código original do editor
+    optimizedCode = codeEditor ? codeEditor.getValue() : "";
+  }
+
+  const codeBlock = document.getElementById("optimizedCode");
+
+  if (!codeBlock) {
+    logger.error("Elemento optimizedCode não encontrado no DOM");
+    return;
+  }
+
+  logger.debug("Código otimizado preparado para exibição", { 
+    length: optimizedCode.length,
+    preview: optimizedCode.substring(0, 100)
+  });
+
+  const preElement = codeBlock.parentElement;
+
+  // Configurar estilos do <pre> para preservar espaços
+  preElement.style.whiteSpace = "pre";
+  preElement.style.tabSize = "4";
+
+  // Normalizar quebras de linha
+  const normalizedCode = optimizedCode
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n");
+
+  // Inserir código diretamente (textContent preserva formatação)
+  codeBlock.textContent = normalizedCode;
+  codeBlock.style.whiteSpace = "pre";
+  codeBlock.style.display = "block";
+
+  // Aplicar classe de linguagem para syntax highlighting
+  codeBlock.className = `language-${getLanguageForPrism(selectedLanguage)}`;
+
+  // Aplicar Prism manualmente
   setTimeout(() => {
-    const codeBlock = document.getElementById("optimizedCode");
-    codeBlock.className = `language-${getLanguageForPrism(selectedLanguage)}`;
+    Prism.manual = true;
     Prism.highlightElement(codeBlock);
-  }, 100);
+  }, 10);
 
   // Footer com info de tokens
   updateFooterInfo(tokens);
@@ -557,13 +814,16 @@ async function copyOptimizedCode() {
     showToast("Erro ao copiar código. Tente selecionar manualmente.", "danger");
   }
 }
-
+logger.error("Erro ao copiar código
 /**
  * Limpa todos os campos
  */
 function clearAll() {
-  // Limpa textarea
-  document.getElementById("codeInput").value = "";
+  // Limpa CodeMirror
+  if (codeEditor) {
+    codeEditor.setValue("");
+    codeEditor.setOption("mode", "text/plain");
+  }
 
   // Reseta para modo auto-detectar
   selectedLanguage = "auto";
@@ -669,7 +929,15 @@ window.addEventListener("DOMContentLoaded", async () => {
       console.log(`🤖 Motor: ${data.engine} (${data.model})`);
       console.log(`🔑 API Status: ${data.api_status}`);
 
+      logger.info("Backend conectado", {
+        version: data.version,
+        engine: data.engine,
+        model: data.model,
+        api_status: data.api_status
+      });
+
       if (data.api_status !== "configured") {
+        logger.warn("API Groq não configurada");
         showToast(
           "⚠️ API Groq não configurada. Configure GROQ_API_KEY nas variáveis de ambiente da Vercel.",
           "warning"
@@ -677,13 +945,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       }
     }
   } catch (error) {
-    console.warn(
-      "⚠️ Backend não está respondendo. Verifique se o servidor está rodando."
-    );
-    showToast(
-      "Aviso: Não foi possível conectar ao servidor. Verifique se o backend está rodando.",
-      "warning"
-    );
+    logger.warn("Backend não respondeu ao healthcheck", error);
   }
 });
 
@@ -726,25 +988,3 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
-
-// Event Listeners
-document.addEventListener("DOMContentLoaded", function () {
-  const codeInput = document.getElementById("codeInput");
-  if (codeInput) {
-    // Debounce para não processar a cada tecla
-    let timeout;
-    codeInput.addEventListener("input", function () {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        onCodeInput();
-      }, 500);
-    });
-
-    // Detectar também no paste
-    codeInput.addEventListener("paste", function () {
-      setTimeout(() => {
-        onCodeInput();
-      }, 100);
-    });
-  }
-});

@@ -87,7 +87,7 @@ class AICodeAnalyzer:
 **FORMATO DE RESPOSTA (JSON ESTRITO):**
 {{
   "hasIssues": true/false,
-  "optimizedCode": "// Código otimizado aqui (se aplicável)",
+  "optimizedCode": "CÓDIGO COMPLETO OTIMIZADO AQUI - OBRIGATÓRIO incluir todo o código corrigido, nunca apenas comentários",
   "issues": [
     {{
       "type": "complexity|memory|idiom|green_it",
@@ -104,9 +104,15 @@ class AICodeAnalyzer:
     "estimatedSpeedup": "Descrição (ex: O(n²) -> O(n), 3.5x faster)",
     "energySavings": "Estimativa de economia energética (ex: -25% CPU cycles)"
   }},
-  "explanation": "Explicação didática em Markdown sobre as otimizações aplicadas, citando documentação oficial e conceitos técnicos. Use code blocks para exemplos.",
+  "explanation": "Explicação didática em Markdown sobre as otimizações aplicadas. NUNCA inclua blocos de código completo aqui. Use apenas pequenos trechos inline com backticks quando necessário. Cite documentação oficial e conceitos técnicos.",
   "qualityScore": 0-100
 }}
+
+**REGRAS CRÍTICAS:**
+1. Campo 'optimizedCode': SEMPRE retorne o código COMPLETO otimizado, nunca apenas comentários ou placeholders
+2. Se não houver otimizações possíveis, retorne o código original intacto no campo 'optimizedCode'
+3. Campo 'explanation': APENAS texto explicativo, SEM blocos de código
+4. O código vai em 'optimizedCode', a explicação vai em 'explanation'
 
 **IMPORTANTE:**
 - Se o código estiver perfeito: hasIssues=false, qualityScore=100, explanation="✅ Código excelente!"
@@ -160,6 +166,14 @@ Retorne APENAS o JSON estruturado (sem texto adicional antes ou depois)."""
             # Validar estrutura
             if not all(k in result for k in ['hasIssues', 'metrics', 'explanation', 'qualityScore']):
                 return self._fallback_response("Resposta da IA em formato inválido")
+            
+            # CRÍTICO: Garantir que optimizedCode contenha código real
+            if 'optimizedCode' not in result or not result['optimizedCode'] or \
+               result['optimizedCode'].strip() in ['', '// Código otimizado aqui (se aplicável)', 
+                                                     '// Código otimizado disponível abaixo',
+                                                     '// Código otimizado abaixo']:
+                # Se a IA não forneceu código, usar o código original
+                result['optimizedCode'] = self.code
             
             # Converter explanation para HTML (Markdown)
             if 'explanation' in result:
