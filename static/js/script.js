@@ -1,16 +1,175 @@
 /**
  * Eco-Code Reviewer v4.0 - Frontend Logic
- * Integração com Groq API para análise semântica real
+ * Integração com Groq API + UI Modernizada + Auto-detecção Inteligente
  */
 
 // URL relativa funciona tanto local quanto na Vercel
 const API_URL = window.location.origin;
 
+// Variável global para armazenar a linguagem selecionada
+let selectedLanguage = "auto";
+
+// Timer para debounce da auto-detecção
+let detectionTimer = null;
+
 /**
- * Auto-detecção de linguagem baseada em padrões de código
+ * Inicialização ao carregar a página
+ */
+document.addEventListener("DOMContentLoaded", function () {
+  initializeLanguagePills();
+  initializeCodeInput();
+  initializeMoreLangsDropdown();
+});
+
+/**
+ * Inicializa os botões de seleção de linguagem (Pills)
+ */
+function initializeLanguagePills() {
+  const pills = document.querySelectorAll(".lang-pill:not(.lang-pill-more)");
+
+  pills.forEach((pill) => {
+    pill.addEventListener("click", function () {
+      // Remove active de todos
+      pills.forEach((p) => p.classList.remove("active"));
+
+      // Adiciona active no clicado
+      this.classList.add("active");
+
+      // Atualiza linguagem selecionada
+      selectedLanguage = this.getAttribute("data-lang");
+      document.getElementById("languageSelect").value = selectedLanguage;
+
+      // Limpa feedback de detecção
+      document.getElementById("detectionFeedback").innerHTML = "";
+
+      // Feedback visual
+      if (selectedLanguage === "auto") {
+        showToast("🔍 Modo Auto-detectar ativado", "info", 2000);
+      } else {
+        showToast(
+          `Linguagem selecionada: ${selectedLanguage.toUpperCase()}`,
+          "success",
+          2000
+        );
+      }
+    });
+  });
+}
+
+/**
+ * Inicializa o dropdown de "Mais linguagens"
+ */
+function initializeMoreLangsDropdown() {
+  const moreBtn = document.getElementById("moreLangsBtn");
+  const dropdown = document.getElementById("moreLangsDropdown");
+  const options = document.querySelectorAll(".lang-option");
+
+  // Toggle dropdown
+  moreBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    dropdown.classList.toggle("show");
+  });
+
+  // Selecionar linguagem do dropdown
+  options.forEach((option) => {
+    option.addEventListener("click", function () {
+      const lang = this.getAttribute("data-lang");
+
+      // Atualiza linguagem
+      selectedLanguage = lang;
+      document.getElementById("languageSelect").value = lang;
+
+      // Remove active de todos os pills
+      document
+        .querySelectorAll(".lang-pill")
+        .forEach((p) => p.classList.remove("active"));
+
+      // Fecha dropdown
+      dropdown.classList.remove("show");
+
+      // Feedback visual
+      showToast(
+        `Linguagem selecionada: ${lang.toUpperCase()}`,
+        "success",
+        2000
+      );
+
+      // Limpa feedback de detecção
+      document.getElementById("detectionFeedback").innerHTML = "";
+    });
+  });
+
+  // Fechar dropdown ao clicar fora
+  document.addEventListener("click", function (e) {
+    if (!moreBtn.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.remove("show");
+    }
+  });
+}
+
+/**
+ * Inicializa o textarea com auto-detecção inteligente
+ */
+function initializeCodeInput() {
+  const codeInput = document.getElementById("codeInput");
+
+  codeInput.addEventListener("input", function () {
+    // Só detecta se estiver em modo "auto"
+    if (selectedLanguage === "auto" && codeInput.value.trim().length > 30) {
+      // Debounce de 500ms
+      clearTimeout(detectionTimer);
+      detectionTimer = setTimeout(() => {
+        runAutoDetection(codeInput.value);
+      }, 500);
+    }
+  });
+}
+
+/**
+ * Executa a auto-detecção de linguagem em tempo real
+ */
+function runAutoDetection(code) {
+  const detected = detectLanguage(code);
+  const feedback = document.getElementById("detectionFeedback");
+
+  if (detected) {
+    feedback.innerHTML = `
+      <i class="fas fa-check-circle"></i>
+      Detectado: <strong>${getLanguageDisplayName(detected)}</strong>
+    `;
+    feedback.style.color = "var(--accent-green)";
+  } else {
+    feedback.innerHTML = `
+      <i class="fas fa-question-circle"></i>
+      Linguagem não identificada
+    `;
+    feedback.style.color = "var(--text-muted)";
+  }
+}
+
+/**
+ * Retorna o nome de exibição da linguagem
+ */
+function getLanguageDisplayName(lang) {
+  const names = {
+    python: "Python",
+    javascript: "JavaScript",
+    typescript: "TypeScript",
+    java: "Java",
+    csharp: "C#",
+    sql: "SQL",
+    nosql: "NoSQL/MongoDB",
+    react: "React/ReactJS",
+    delphi: "Delphi",
+  };
+  return names[lang] || lang.toUpperCase();
+}
+
+/**
+ * Auto-detecção de linguagem baseada em padrões de código (MELHORADA)
  */
 function detectLanguage(code) {
-  // Padrões de detecção
+  // Padrões de detecção aprimorados
   const patterns = {
     python: [
       /^\s*def\s+\w+\s*\(/m,
@@ -20,6 +179,7 @@ function detectLanguage(code) {
       /^\s*@\w+/m,
       /\bprint\s*\(/,
       /\belif\b/,
+      /:\s*$/m, // Dois pontos no final da linha (Python)
     ],
     javascript: [
       /^\s*function\s+\w+\s*\(/m,
@@ -29,13 +189,15 @@ function detectLanguage(code) {
       /console\.log\(/,
       /=>\s*{/,
       /\brequire\s*\(/,
+      /\bexport\s+(default|const|function)/m,
     ],
     typescript: [
-      /:\s*(string|number|boolean|any)\s*[;=]/,
+      /:\s*(string|number|boolean|any)\s*[;=\)]/,
       /^\s*interface\s+\w+/m,
       /^\s*type\s+\w+\s*=/m,
       /<\w+>/,
       /as\s+(string|number|boolean)/,
+      /:\s*\w+\[\]/,
     ],
     java: [
       /^\s*public\s+class\s+\w+/m,
@@ -44,6 +206,7 @@ function detectLanguage(code) {
       /System\.out\.println/,
       /^\s*import\s+java\./m,
       /\bnew\s+\w+\s*\(/,
+      /\bpublic\s+static\s+void\s+main/m,
     ],
     csharp: [
       /^\s*public\s+class\s+\w+/m,
@@ -52,6 +215,7 @@ function detectLanguage(code) {
       /Console\.WriteLine/,
       /\bstring\[\]\s+args\b/,
       /\bnamespace\s+\w+/m,
+      /\bvar\s+\w+\s*=\s*new\b/,
     ],
     sql: [
       /^\s*SELECT\s+/im,
@@ -61,6 +225,7 @@ function detectLanguage(code) {
       /^\s*CREATE\s+TABLE/im,
       /\bJOIN\b/i,
       /\bWHERE\b/i,
+      /\bGROUP\s+BY\b/i,
     ],
     react: [
       /^\s*import\s+React/m,
@@ -70,6 +235,7 @@ function detectLanguage(code) {
       /<\/\w+>/,
       /className=/,
       /\bJSX\b/,
+      /return\s*\(/,
     ],
     delphi: [
       /^\s*procedure\s+\w+/im,
@@ -77,6 +243,7 @@ function detectLanguage(code) {
       /^\s*begin\b/im,
       /^\s*end\s*;/im,
       /\bvar\s+\w+\s*:\s*\w+/im,
+      /\bunit\s+\w+/im,
     ],
     nosql: [
       /db\.\w+\.find\(/,
@@ -85,6 +252,7 @@ function detectLanguage(code) {
       /\$match\s*:/,
       /\$group\s*:/,
       /\$project\s*:/,
+      /\$lookup\s*:/,
     ],
   };
 
@@ -111,32 +279,8 @@ function detectLanguage(code) {
     }
   }
 
-  // Se nenhum match significativo, retorna null
+  // Retorna apenas se houver confiança suficiente (2+ matches)
   return maxScore >= 2 ? detectedLang : null;
-}
-
-/**
- * Handler para input de código - detecta linguagem automaticamente
- */
-function onCodeInput() {
-  const codeInput = document.getElementById("codeInput");
-  const languageSelect = document.getElementById("languageSelect");
-  const code = codeInput.value.trim();
-
-  // Só auto-detecta se opção "auto" estiver selecionada
-  if (languageSelect.value === "auto" && code.length > 50) {
-    const detected = detectLanguage(code);
-    if (detected) {
-      // Mostra feedback visual da detecção
-      const label = document.querySelector('label[for="languageSelect"]');
-      const originalText = label.innerHTML;
-      label.innerHTML = `<i class="fas fa-check-circle text-success"></i> Linguagem: ${detected.toUpperCase()} detectado`;
-
-      setTimeout(() => {
-        label.innerHTML = originalText;
-      }, 2000);
-    }
-  }
 }
 
 /**
@@ -144,9 +288,8 @@ function onCodeInput() {
  */
 async function analyzeCode() {
   const codeInput = document.getElementById("codeInput");
-  const languageSelect = document.getElementById("languageSelect");
   const code = codeInput.value.trim();
-  let language = languageSelect.value;
+  let language = selectedLanguage; // Usa a variável global
 
   if (!code) {
     showToast("Por favor, insira um código para análise.", "warning");
@@ -158,13 +301,17 @@ async function analyzeCode() {
     const detected = detectLanguage(code);
     if (detected) {
       language = detected;
-      showToast(`🔍 Linguagem detectada: ${language.toUpperCase()}`, "info");
-    } else {
       showToast(
-        "⚠️ Não foi possível detectar a linguagem automaticamente. Por favor, selecione manualmente.",
+        `🔍 Linguagem detectada: ${getLanguageDisplayName(detected)}`,
+        "info"
+      );
+    } else {
+      // Fallback: Envia como "auto" e deixa o backend/LLM decidir
+      showToast(
+        "⚠️ Linguagem não identificada localmente. A IA tentará detectar...",
         "warning"
       );
-      return;
+      language = "auto"; // Mantém como auto para o backend processar
     }
   }
 
@@ -175,7 +322,7 @@ async function analyzeCode() {
   const analyzeBtn = document.getElementById("analyzeBtn");
   analyzeBtn.disabled = true;
   analyzeBtn.innerHTML =
-    '<i class="fas fa-spinner fa-spin"></i> Analisando com IA...';
+    '<i class="fas fa-spinner fa-spin"></i> <span class="btn-text">Analisando...</span>';
 
   try {
     const response = await fetch(`${API_URL}/analyze`, {
@@ -204,7 +351,8 @@ async function analyzeCode() {
     showEmptyState();
   } finally {
     analyzeBtn.disabled = false;
-    analyzeBtn.innerHTML = '<i class="fas fa-search"></i> Analisar Eficiência';
+    analyzeBtn.innerHTML =
+      '<i class="fas fa-search"></i> <span class="btn-text">Analisar</span>';
   }
 }
 
@@ -289,9 +437,7 @@ function displayResults(result) {
   // Aplicar syntax highlighting no código otimizado
   setTimeout(() => {
     const codeBlock = document.getElementById("optimizedCode");
-    codeBlock.className = `language-${getLanguageForPrism(
-      languageSelect.value
-    )}`;
+    codeBlock.className = `language-${getLanguageForPrism(selectedLanguage)}`;
     Prism.highlightElement(codeBlock);
   }, 100);
 
@@ -416,8 +562,25 @@ async function copyOptimizedCode() {
  * Limpa todos os campos
  */
 function clearAll() {
+  // Limpa textarea
   document.getElementById("codeInput").value = "";
-  document.getElementById("languageSelect").value = "python";
+
+  // Reseta para modo auto-detectar
+  selectedLanguage = "auto";
+  document.getElementById("languageSelect").value = "auto";
+
+  // Reseta pills visuais
+  document
+    .querySelectorAll(".lang-pill")
+    .forEach((p) => p.classList.remove("active"));
+  document
+    .querySelector('.lang-pill[data-lang="auto"]')
+    .classList.add("active");
+
+  // Limpa feedback de detecção
+  document.getElementById("detectionFeedback").innerHTML = "";
+
+  // Mostra empty state
   showEmptyState();
   document.getElementById("scoreMini").style.display = "none";
 
@@ -426,6 +589,8 @@ function clearAll() {
   if (apiInfo) {
     apiInfo.remove();
   }
+
+  showToast("✨ Interface resetada", "info", 2000);
 }
 
 /**
@@ -449,7 +614,7 @@ function showLoading() {
 /**
  * Exibe um toast (notificação)
  */
-function showToast(message, type = "info") {
+function showToast(message, type = "info", duration = 5000) {
   // Remover toasts anteriores
   const existingToast = document.querySelector(".custom-toast");
   if (existingToast) {
@@ -464,6 +629,7 @@ function showToast(message, type = "info") {
         right: 20px;
         z-index: 9999;
         min-width: 300px;
+        max-width: 500px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         animation: slideInRight 0.3s ease;
     `;
@@ -475,11 +641,11 @@ function showToast(message, type = "info") {
 
   document.body.appendChild(toastDiv);
 
-  // Auto-remover após 5 segundos
+  // Auto-remover após duração especificada
   setTimeout(() => {
     toastDiv.classList.remove("show");
     setTimeout(() => toastDiv.remove(), 300);
-  }, 5000);
+  }, duration);
 }
 
 /**

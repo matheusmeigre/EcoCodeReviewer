@@ -42,50 +42,73 @@
 
     <!-- Main Split View Container -->
     <main class="split-container">
-        <!-- Controls Bar -->
+        <!-- Controls Bar - MOBILE OPTIMIZED -->
         <div class="controls-bar">
             <div class="container-fluid">
-                <div class="row align-items-center">
-                    <div class="col-md-3">
-                        <label for="languageSelect" class="form-label mb-0">
-                            <i class="fas fa-code"></i> Linguagem:
-                        </label>
-                        <select class="form-select form-select-sm" id="languageSelect">
-                            <option value="auto" selected>🔍 Auto-detectar</option>
-                            <option value="python">Python</option>
-                            <option value="csharp">C#</option>
-                            <option value="java">Java</option>
-                            <option value="delphi">Delphi</option>
-                            <option value="javascript">JavaScript</option>
-                            <option value="typescript">TypeScript</option>
-                            <option value="react">React/ReactJS</option>
-                            <option value="sql">SQL</option>
-                            <option value="nosql">NoSQL/MongoDB</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 text-center">
-                        <button class="btn btn-analyze" id="analyzeBtn" onclick="analyzeCode()">
-                            <i class="fas fa-search"></i>
-                            Analisar Eficiência
+                <!-- Language Selector - CUSTOM PILLS (Substituindo select nativo) -->
+                <div class="language-selector-wrapper">
+                    <label class="selector-label">
+                        <i class="fas fa-code"></i> Linguagem:
+                    </label>
+                    <div class="language-pills" id="languagePills">
+                        <button class="lang-pill active" data-lang="auto" title="Auto-detectar com IA">
+                            <i class="fas fa-magic"></i> Auto
                         </button>
-                        <button class="btn btn-clear" onclick="clearAll()">
-                            <i class="fas fa-eraser"></i>
-                            Limpar
+                        <button class="lang-pill" data-lang="python" title="Python">
+                            <i class="fab fa-python"></i> Python
+                        </button>
+                        <button class="lang-pill" data-lang="javascript" title="JavaScript">
+                            <i class="fab fa-js"></i> JS
+                        </button>
+                        <button class="lang-pill" data-lang="java" title="Java">
+                            <i class="fab fa-java"></i> Java
+                        </button>
+                        <button class="lang-pill" data-lang="csharp" title="C#">
+                            C#
+                        </button>
+                        <button class="lang-pill lang-pill-more" id="moreLangsBtn" title="Mais linguagens">
+                            <i class="fas fa-ellipsis-h"></i>
                         </button>
                     </div>
-                    <div class="col-md-3 text-end">
-                        <div class="score-mini" id="scoreMini" style="display: none;">
-                            Score: <span id="scoreMiniValue">--</span>/100
-                        </div>
+                    
+                    <!-- Dropdown para linguagens adicionais -->
+                    <div class="more-langs-dropdown" id="moreLangsDropdown">
+                        <button class="lang-option" data-lang="typescript">TypeScript</button>
+                        <button class="lang-option" data-lang="react">React/ReactJS</button>
+                        <button class="lang-option" data-lang="sql">SQL</button>
+                        <button class="lang-option" data-lang="nosql">NoSQL/MongoDB</button>
+                        <button class="lang-option" data-lang="delphi">Delphi</button>
+                    </div>
+                    
+                    <!-- Hidden input para compatibilidade com código existente -->
+                    <input type="hidden" id="languageSelect" value="auto">
+                    
+                    <!-- Feedback de detecção automática -->
+                    <div class="detection-feedback" id="detectionFeedback"></div>
+                </div>
+                
+                <!-- Action Buttons - RESPONSIVE -->
+                <div class="action-buttons">
+                    <button class="btn btn-analyze" id="analyzeBtn" onclick="analyzeCode()">
+                        <i class="fas fa-search"></i>
+                        <span class="btn-text">Analisar</span>
+                    </button>
+                    <button class="btn btn-clear" onclick="clearAll()">
+                        <i class="fas fa-eraser"></i>
+                        <span class="btn-text">Limpar</span>
+                    </button>
+                    <div class="score-mini" id="scoreMini" style="display: none;">
+                        <span class="score-label">Score:</span>
+                        <span id="scoreMiniValue">--</span>/100
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Split View Grid -->
+        <!-- Split View Grid - RESPONSIVE (col-12 col-lg-6) -->
         <div class="split-view">
             <!-- Left Panel: Input -->
-            <div class="panel panel-left">
+            <div class="panel panel-left col-12 col-lg-6">
                 <div class="panel-header">
                     <i class="fas fa-file-code"></i>
                     Código Original
@@ -121,7 +144,7 @@ function Component() {
             </div>
 
             <!-- Right Panel: Output -->
-            <div class="panel panel-right">
+            <div class="panel panel-right col-12 col-lg-6">
                 <!-- Empty State -->
                 <div class="empty-state" id="emptyState">
                     <i class="fas fa-leaf empty-icon"></i>
