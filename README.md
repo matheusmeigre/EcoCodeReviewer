@@ -371,7 +371,7 @@ Sugestões de melhorias para v3.0:
 
 ## 📄 Licença
 
-Desenvolvido para o **Grupo Energisa** - Inovação & Tecnologia  
+Desenvolvido por **Matheus Meigre** - Inovação & Tecnologia  
 © 2025 - Todos os direitos reservados
 
 ---
@@ -406,6 +406,3 @@ Cada otimização de código contribui para:
 
 **Desenvolvido com 💚 para um futuro mais sustentável**  
 *Eco-Code Reviewer v4.0 - Onde Performance encontra Sustentabilidade*
- 
- 
-
